@@ -15,7 +15,7 @@ Our goal for this application was to make a user experience that allows navigati
 
 N/A
 
-## Usage
+## Screenshot
 
    ![website](./images/project-1%20readme%20photo.PNG)
 
@@ -51,9 +51,13 @@ N/A
 - fordefam12@gmail.com
 - gioggonzalez214@gmail.com
 
-## URL 
+## Deployed 
 
 https://fordefam12.github.io/gameBox/
+
+
+## URL
+
 https://github.com/fordefam12/gameBox!
-[screenshot](41446891-59f4baeaee65d8a982aa079d769d49b3.png)
+
 ![QR code](image-1.png)
