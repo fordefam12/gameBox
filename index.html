@@ -18,13 +18,31 @@
 </head>
 
 <body onload="pageLoad()">
-    <header class="is-flex is-flex-direction-row is-justify-content-space-between has-background-grey-light p-5">
-        <i class="has-text-weight-bold p-2 has-text-danger">GameBox</i>
-        <form id="form" role="search" class="is-flex is-flex-direction-row is-justify-content-space-between mb-2">
-            <input action="search" id="query" name="q" placeholder="Search Games..." class="mr-2">
-            <button id="SearchBtn" value="input" class="has-background-danger px-3">Search</button>
-        </form>
+    <header class="navbar is-flex is-flex-direction-row is-justify-content-space-between has-background-dark p-3">
+        <div class="navbar-brand">
+            <i class="has-text-weight-bold p-2 has-text-danger is-size-4">GameBox</i>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-start"></div>
+            <div class="navbar-end">
+                <form id="form" role="search" class="field is-grouped mb-0">
+                    <div class="control">
+                        <input action="search" id="query" name="q" class="input is-rounded" type="text"
+                            placeholder="Search Games...">
+                    </div>
+                    <div class="control">
+                        <div class="field ">
+                            <div class="control">
+                                <button id="SearchBtn" value="input" class="button is-danger">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </header>
+    
+    
     <main>
         <section class="columns">
             <section class="column is-one-quarter tile is-ancestor pt-6 is-vertical">
@@ -43,18 +61,20 @@
             </section>
             <section class="column is-half tile is-ancestor pt-6">
                 <div class="tile is-6 is-parent is-vertical">
-                    <article class="tile is-child notification is-danger"data-aos="fade-down-left">
+                    <article class="tile is-child notification is-danger" data-aos="fade-down-left">
                         <p class="title" id="vgTitle"></p>
                         <p class="subtitle" id="releaseDate"></p>
-                        <div class="content ">
+                        <div class="content">
                             <article class="tile is-child notification is-primary">
                                 <p class="title">Description:</p>
-                                <p class="subtitle" id="vgDescription"></p>
+                                <div class="content">
+                                    <p class="subtitle" id="vgDescription"></p>
+                                </div>
                             </article>
                         </div>
                     </article>
-
                 </div>
+                
                 <div class="tile is-6 is-parent is-vertical">
                     <div class="tile is-child is-vertical">
                         <article data-aos="fade-up-right" class="tile is-child notification is-info">

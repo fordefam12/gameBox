@@ -15,17 +15,21 @@ header {
   padding-bottom: 5px;
   padding-left: 3%;
   width: 100%;
+  left: -220px;
 }
 #SearchBtn {
   border: none;
   color: azure;
   border-radius: 5px;
+  left: -230px;
 }
 form {
   width: 25%;
 }
 #chartsection {
   padding-bottom: 1.8%;
+  max-height: 50%;
+  min-height: 50%;
 }
 main {
   display: flex;

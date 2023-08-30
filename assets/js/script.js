@@ -40,7 +40,12 @@ function pageLoad() {
     .then(function (res) {
       return res.json();
     })
-    .then(function (pageLoadData) {
+    .then(function (pageLoadData) { 
+      var videoGameImageURLDynamic2 = pageLoadData.background_image_additional;
+      document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundSize = 'cover';
+    
       console.log(pageLoadData);
       var videoGameTitle = document.querySelector("#vgTitle");
       saveEl.setAttribute("data-game", pageLoadData.name);
@@ -269,9 +274,14 @@ function searchGame(inputVal) {
       var videoGameImage = document.createElement("img");
       videoGameContainer.appendChild(videoGameImage);
       var videoGameImageURLDynamic = data.background_image;
+      var videoGameImageURLDynamic2 = data.background_image_additional;
+      console.log(data.background_image_additional);
       videoGameImage.setAttribute("src", videoGameImageURLDynamic);
       // end
-
+     
+      document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundSize = 'cover';
       var genreString = "";
       for (i = 0; i < data.genres.length; i++) {
         console.log(data.genres[i].id);
@@ -415,7 +425,8 @@ function searchGame(inputVal) {
             },
           });
         });
-    });
+    }
+    );
 }
 // The following function renders items in a todo list as <li> elements
 function renderWishlist() {
