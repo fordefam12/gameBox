@@ -41,10 +41,14 @@ open html in browser
 
 ## Contributors
 
-- Ryan.business.bowen@gmail.com
-- shawnbunch@gmail.com
-- fordefam12@gmail.com
-- gioggonzalez214@gmail.com
+
+
+
+ 
+- Ryan.business.bowen@gmail.com / https://github.com/RyanTheSCholar
+- shawnbunch@gmail.com / https://github.com/shbunch
+- fordefam12@gmail.com / https://github.com/fordefam12
+- gioggonzalez214@gmail.com / https://github.com/Giovanny214
 
 ## License
 [![License: The_Unlicense](https://img.shields.io/badge/License-The_Unlicense-brightgreen.svg)](https://opensource.org/licenses/The_Unlicense)
