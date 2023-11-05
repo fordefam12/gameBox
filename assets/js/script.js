@@ -1,21 +1,14 @@
 var rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
 var fullGameList = "https://api.rawg.io/api/games?key=" + rawgAPIKey;
 
-  AOS.init();
+AOS.init();
 
-// ? Sample RAWG API links for reference
-// Full list of games - https://api.rawg.io/api/games?key=5e68bfa8ec8141a990c74c4ebefb01ea
-// Games list with filters - https://api.rawg.io/api/games?key=5e68bfa8ec8141a990c74c4ebefb01ea&dates=2019-09-01,2019-09-30&platforms=18,1,7
-// Borderlands 3 game details - https://api.rawg.io/api/games/borderlands-3?key=5e68bfa8ec8141a990c74c4ebefb01ea
-// how to get the rawg genres on for the chart data ->
-// clear input field for more searches
-// var rawgKey ='9291f496b0954cfd85fdd080b9cd538f' this is ryans api key;
-// var rawgKey ='5e68bfa8ec8141a990c74c4ebefb01ea' this is shawns api key;
-// var rawgKey ='afe2446d033e4b5197325726cd2f5fb8' this is brandons api key;
 var modalWindow = document.getElementById("modalWindow");
+
 function showModal() {
   modalWindow.style.display = "block";
 }
+
 function hideModal() {
   modalWindow.style.display = "none";
 }
@@ -24,6 +17,7 @@ var saveEl = document.getElementById("saveBtn");
 var input = document.getElementById("query");
 var wishlist = document.getElementById("wishlist-id");
 var wishlistCount = document.getElementById("wishlist-count");
+
 function searchBar(event) {
   event.preventDefault();
   var inputVal = input.value;
@@ -31,22 +25,22 @@ function searchBar(event) {
   var videoGameContainerParent = document.getElementById("vgImages");
   videoGameContainerParent.innerHTML = "";
 }
-// List of games object on console log
+
 function pageLoad() {
-  var pageLoadURL =
-    "https://api.rawg.io/api/games/borderlands?key=" + rawgAPIKey;
+  var pageLoadURL = "https://api.rawg.io/api/games/borderlands?key=" + rawgAPIKey;
 
   fetch(pageLoadURL)
     .then(function (res) {
       return res.json();
     })
-    .then(function (pageLoadData) { 
+    .then(function (pageLoadData) {
       var videoGameImageURLDynamic2 = pageLoadData.background_image_additional;
       document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
       document.body.style.backgroundRepeat = 'no-repeat';
       document.body.style.backgroundSize = 'cover';
-    
+
       console.log(pageLoadData);
+
       var videoGameTitle = document.querySelector("#vgTitle");
       saveEl.setAttribute("data-game", pageLoadData.name);
       var videoGameDesc = document.querySelector("#vgDescription");
@@ -66,26 +60,29 @@ function pageLoad() {
       videoGameTitle.textContent = pageLoadData.name;
       videoGameRating.textContent = pageLoadData.esrb_rating.name;
       var staticPlatformsString = "";
-      for (j = 0; j < pageLoadData.parent_platforms.length; j++) {
+      for (var j = 0; j < pageLoadData.parent_platforms.length; j++) {
         staticPlatformsString +=
           pageLoadData.parent_platforms[j].platform.name + ", ";
       }
       staticPlatformsString = staticPlatformsString.slice(0, -2);
       console.log(staticPlatformsString);
       videoGamePlatforms.textContent = staticPlatformsString;
+
       var genreStringOnLoad = "";
-      for (i = 0; i < pageLoadData.genres.length; i++) {
+      for (var i = 0; i < pageLoadData.genres.length; i++) {
         console.log(pageLoadData.genres[i].id);
         genreStringOnLoad += pageLoadData.genres[i].id + ",";
       }
       genreStringOnLoad = genreStringOnLoad.slice(0, -1);
       console.log(genreStringOnLoad);
+
       var pageLoadGenre =
         "https://api.rawg.io/api/games" +
         "?key=" +
         rawgAPIKey +
         "&genres=" +
         genreStringOnLoad;
+
       fetch(pageLoadGenre)
         .then(function (res) {
           return res.json();
@@ -93,7 +90,87 @@ function pageLoad() {
         .then(function (pageLoadRatingData) {
           console.log(pageLoadRatingData);
 
-          // charts in here
+          function populateCarouselWithImages() {
+            var carousel = document.querySelector('#myCarousel .carousel-inner');
+          
+            // Extract background images and game names from the first 20 results
+            var gameResults = pageLoadRatingData.results.slice(0, 20);
+          
+            // Group the game results into chunks of 3
+            var chunkSize = 4;
+            for (var i = 0; i < gameResults.length; i += chunkSize) {
+              var chunk = gameResults.slice(i, i + chunkSize);
+          
+              var item = document.createElement('div');
+              item.className = 'carousel-item';
+          
+              // Add the "active" class to the first item
+              if (i === 0) {
+                item.classList.add('active');
+              }
+          
+              // Create a row for the images
+              var row = document.createElement('div');
+              row.className = 'row';
+          
+              // Loop through the chunk of game results
+              chunk.forEach(function (gameData) {
+                var gameImageURL = gameData.background_image;
+                var gameName = gameData.name;
+          
+                // Create a column for each image
+                var col = document.createElement('div');
+                col.className = 'col';
+          
+                // Create a container to set a fixed size
+                var imageContainer = document.createElement('div');
+                imageContainer.style.width = '300px'; // Set the desired width
+                imageContainer.style.height = '200px'; // Set the desired height
+                imageContainer.style.overflow = 'hidden';
+                imageContainer.style.position = 'relative'; // To position text inside
+          
+                // Create an image element
+                var image = document.createElement('img');
+                image.src = gameImageURL;
+                image.style.width = '100%'; // Make the image fill the container
+                image.style.height = '100%';
+          
+                // Create a text element for the game name
+                var gameNameText = document.createElement('p');
+                gameNameText.textContent = gameName;
+                gameNameText.style.position = 'absolute';
+                gameNameText.style.bottom = '0';
+                gameNameText.style.left = '0';
+                gameNameText.style.right = '0';
+                gameNameText.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                gameNameText.style.color = 'white';
+                gameNameText.style.padding = '5px';
+          
+                // Add the image and game name to the container
+                imageContainer.appendChild(image);
+                imageContainer.appendChild(gameNameText);
+          
+                // Add the container to the column
+                col.appendChild(imageContainer);
+          
+                // Add the column to the row
+                row.appendChild(col);
+              });
+          
+              // Add the row to the item
+              item.appendChild(row);
+          
+              // Add the item to the carousel
+              carousel.appendChild(item);
+            }
+          }
+          
+          populateCarouselWithImages();
+
+          
+          
+          
+
           var game1 = pageLoadData.name;
           var game2 = pageLoadRatingData.results[1].name;
           var game3 = pageLoadRatingData.results[2].name;
@@ -107,8 +184,7 @@ function pageLoad() {
           var gameRating5 = pageLoadRatingData.results[3].rating;
 
           const ctx = document.getElementById("ratingChart");
-          // destroy chart code
-          var chartStatus = Chart.getChart("ratingChart"); // <canvas> id
+          var chartStatus = Chart.getChart("ratingChart");
           if (chartStatus != undefined) {
             chartStatus.destroy();
           }
@@ -120,14 +196,7 @@ function pageLoad() {
               datasets: [
                 {
                   label: "Rating",
-
-                  data: [
-                    gameRating1,
-                    gameRating2,
-                    gameRating3,
-                    gameRating4,
-                    gameRating5,
-                  ],
+                  data: [gameRating1, gameRating2, gameRating3, gameRating4, gameRating5],
                   borderWidth: 2,
                   backgroundColor: "rgb(250, 6, 6)",
                 },
@@ -162,9 +231,7 @@ function pageLoad() {
           });
 
           const ctx1 = document.getElementById("popChart");
-
-          // destroy chart code
-          var chartStatus = Chart.getChart("popChart"); // <canvas> id
+          var chartStatus = Chart.getChart("popChart");
           if (chartStatus != undefined) {
             chartStatus.destroy();
           }
@@ -176,13 +243,7 @@ function pageLoad() {
               datasets: [
                 {
                   label: "Rating",
-                  data: [
-                    gameRating1,
-                    gameRating2,
-                    gameRating3,
-                    gameRating4,
-                    gameRating5,
-                  ],
+                  data: [gameRating1, gameRating2, gameRating3, gameRating4, gameRating5],
                   borderWidth: 5,
                   backgroundColor: "rgb(250, 6, 6)",
                 },
@@ -209,7 +270,6 @@ function pageLoad() {
 
               scales: {
                 y: {
-                  // defining min and max so hiding the dataset does not change scale range
                   min: 0,
                   max: 5,
                 },
@@ -219,33 +279,26 @@ function pageLoad() {
         });
     });
 }
-// Targeting Search button element
-var searchEl = document.querySelector("#SearchBtn");
 
-//! Code that runs when Search button is pressed (almost all code should go here)
 function searchGame(inputVal) {
-  console.log(inputVal);
   var specificGameURL =
     "https://api.rawg.io/api/games/" +
     inputVal.replace(/\s+/g, "-").toLowerCase() +
     "?key=" +
     rawgAPIKey;
-  // Collect user input for the game search and store it in a variable
+
   fetch(specificGameURL)
     .then(function (res) {
       return res.json();
     })
     .then(function (data) {
-      console.log(data);
-      console.log(data.redirect);
       if (data.redirect === true) {
         showModal();
       }
-      if(data.redirect === true){
+      if (data.redirect === true) {
         inputVal = data.slug;
       }
-      // make website content here
-      // game title/ release/ description
+
       var videoGameTitle = document.querySelector("#vgTitle");
       videoGameTitle.textContent = data.name;
       saveEl.setAttribute("data-game", data.name);
@@ -253,55 +306,48 @@ function searchGame(inputVal) {
       videoGameRelease.textContent = "Released:" + data.released;
       var videoGameDescription = document.querySelector("#vgDescription");
       videoGameDescription.textContent = data.description_raw;
-      // rating
       var videoGameRating = document.querySelector("#vgRating");
       videoGameRating.textContent = data.esrb_rating.name;
       if (data.esrb_rating.name === null) {
         videoGameRating.textContent = "";
       }
-      // platforms
       var videoGamePlatforms = document.querySelector("#vgPlatforms");
       var platformsString = "";
-      for (j = 0; j < data.parent_platforms.length; j++) {
+      for (var j = 0; j < data.parent_platforms.length; j++) {
         platformsString += data.parent_platforms[j].platform.name + ", ";
       }
       platformsString = platformsString.slice(0, -2);
-      console.log(platformsString);
       videoGamePlatforms.textContent = platformsString;
-      // image
 
       var videoGameContainer = document.getElementById("vgImages");
       var videoGameImage = document.createElement("img");
       videoGameContainer.appendChild(videoGameImage);
       var videoGameImageURLDynamic = data.background_image;
       var videoGameImageURLDynamic2 = data.background_image_additional;
-      console.log(data.background_image_additional);
       videoGameImage.setAttribute("src", videoGameImageURLDynamic);
-      // end
-     
+
       document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
       document.body.style.backgroundRepeat = 'no-repeat';
       document.body.style.backgroundSize = 'cover';
+
       var genreString = "";
-      for (i = 0; i < data.genres.length; i++) {
-        console.log(data.genres[i].id);
+      for (var i = 0; i < data.genres.length; i++) {
         genreString += data.genres[i].id + ",";
       }
       genreString = genreString.slice(0, -1);
-      console.log(genreString);
+
       var genreURL =
         "https://api.rawg.io/api/games" +
         "?key=" +
         rawgAPIKey +
         "&genres=" +
         genreString;
+
       fetch(genreURL)
         .then(function (res) {
           return res.json();
         })
         .then(function (ratingData) {
-          console.log(ratingData);
-
           var game1 = data.name;
           var game2 = ratingData.results[1].name;
           var game3 = ratingData.results[2].name;
@@ -315,8 +361,7 @@ function searchGame(inputVal) {
           var gameRating5 = ratingData.results[3].rating;
 
           const ctx = document.getElementById("ratingChart");
-          // destroy chart code
-          var chartStatus = Chart.getChart("ratingChart"); // <canvas> id
+          var chartStatus = Chart.getChart("ratingChart");
           if (chartStatus != undefined) {
             chartStatus.destroy();
           }
@@ -328,14 +373,7 @@ function searchGame(inputVal) {
               datasets: [
                 {
                   label: "Rating",
-
-                  data: [
-                    gameRating1,
-                    gameRating2,
-                    gameRating3,
-                    gameRating4,
-                    gameRating5,
-                  ],
+                  data: [gameRating1, gameRating2, gameRating3, gameRating4, gameRating5],
                   borderWidth: 2,
                   backgroundColor: "rgb(250, 6, 6)",
                 },
@@ -370,9 +408,7 @@ function searchGame(inputVal) {
           });
 
           const ctx1 = document.getElementById("popChart");
-
-          // destroy chart code
-          var chartStatus = Chart.getChart("popChart"); // <canvas> id
+          var chartStatus = Chart.getChart("popChart");
           if (chartStatus != undefined) {
             chartStatus.destroy();
           }
@@ -384,13 +420,7 @@ function searchGame(inputVal) {
               datasets: [
                 {
                   label: "Rating",
-                  data: [
-                    gameRating1,
-                    gameRating2,
-                    gameRating3,
-                    gameRating4,
-                    gameRating5,
-                  ],
+                  data: [gameRating1, gameRating2, gameRating3, gameRating4, gameRating5],
                   borderWidth: 5,
                   backgroundColor: "rgb(250, 6, 6)",
                 },
@@ -417,7 +447,6 @@ function searchGame(inputVal) {
 
               scales: {
                 y: {
-                  // defining min and max so hiding the dataset does not change scale range
                   min: 0,
                   max: 5,
                 },
@@ -425,8 +454,7 @@ function searchGame(inputVal) {
             },
           });
         });
-    }
-    );
+    });
 }
 // The following function renders items in a todo list as <li> elements
 function renderWishlist() {

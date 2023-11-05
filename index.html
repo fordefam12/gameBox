@@ -1,153 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./assets/css/normalize.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./assets/css/normalize.css" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&family=Permanent+Marker&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="./assets/css/style.css">
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
+    <link rel="stylesheet" href="./assets/css/style.css" />
     <title>GameBox</title>
-</head>
+  </head>
 
-<body onload="pageLoad()">
-    <header class="navbar is-flex is-flex-direction-row is-justify-content-space-between has-background-dark p-3">
-        <div class="navbar-brand">
-            <i class="has-text-weight-bold p-2 has-text-danger is-size-4">GameBox</i>
-        </div>
-        <div class="navbar-menu">
-            <div class="navbar-start"></div>
-            <div class="navbar-end">
-                <form id="form" role="search" class="field is-grouped mb-0">
-                    <div class="control">
-                        <input action="search" id="query" name="q" class="input is-rounded" type="text"
-                            placeholder="Search Games...">
-                    </div>
-                    <div class="control">
-                        <div class="field ">
-                            <div class="control">
-                                <button id="SearchBtn" value="input" class="button is-danger">Search</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+  <body onload="pageLoad()">
+    <header
+      class="navbar is-flex is-flex-direction-row is-justify-content-space-between has-background-dark p-3"
+    >
+      <div class="navbar-brand">
+        <i class="has-text-weight-bold p-2 has-text-danger is-size-4"
+          >GameBox</i
+        >
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start"></div>
+        <div class="navbar-end">
+          <form id="form" role="search" class="field is-grouped mb-0">
+            <div class="control">
+              <input
+                action="search"
+                id="query"
+                name="q"
+                class="input is-rounded"
+                type="text"
+                placeholder="Search Games..."
+              />
             </div>
+            <div class="control">
+              <div class="field">
+                <div class="control">
+                  <button id="SearchBtn" value="input" class="button is-danger">
+                    Search
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
+        
+      </div>
+     
     </header>
-    
-    
-    <main>
-        <section class="columns">
-            <section class="column is-one-quarter tile is-ancestor pt-6 is-vertical">
-                <div class="tile is-parent">
-                    <article data-aos="flip-right" class="tile is-child notification has-background-warning">
-                        <div class="content">
-                            <p class="title">Wishlist Items</p>
-                            <p class="subtitle"></p>
-                            <p>Wishlist Count: <span id="wishlist-count">0</span></p>
-                            <div id="wishlist-id">
-
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-            <section class="column is-half tile is-ancestor pt-6">
-                <div class="tile is-6 is-parent is-vertical">
-                    <article class="tile is-child notification is-danger" data-aos="fade-down-left">
-                        <p class="title" id="vgTitle"></p>
-                        <p class="subtitle" id="releaseDate"></p>
-                        <div class="content">
-                            <article class="tile is-child notification is-primary">
-                                <p class="title">Description:</p>
-                                <div class="content">
-                                    <p class="subtitle" id="vgDescription"></p>
-                                </div>
-                            </article>
-                        </div>
-                    </article>
-                </div>
-                
-                <div class="tile is-6 is-parent is-vertical">
-                    <div class="tile is-child is-vertical">
-                        <article data-aos="fade-up-right" class="tile is-child notification is-info">
-                            <p class="title">Rating:</p>
-                            <p class="subtitle" id="vgRating"></p>
-                        </article>
-                        <article data-aos="fade-up-left" class="tile is-child notification is-success" id="vgPlatformscontainer">
-                            <p class="title">Platforms:</p>
-                            <p class="subtitle" id="vgPlatforms"></p>
-                        </article>
-                        <article data-aos="fade-up"
-                        data-aos-anchor-placement="center-bottom" class="tile notification has-background-grey-lighter" id="vgimgcontainer">
-                            <div class="content">
-                                <div class="content" id="vgImages">
-                                    <!-- Content -->
-                                </div>
-                            </div>
-                        </article>
-                        <article data-aos="zoom-out" class="tile is-child notification is-primary is-flex is-justify-content-center" id="mediabutton">
-                            <p class="title"></p>
-                            <p class="subtitle"></p>
-                            <div  class="content ">
-                                <!-- tile is-child notification has-background-link -->
-                                <article  class="" id="saveform">
-                                    <p class="title"></p>
-                                    <p class="subtitle"></p>
-                                    <form>
-                                        <button type="submit"
-                                            class="notification has-background-danger is-flex is-justify-content-center"
-                                            id="saveBtn">Save To Wishlist</button>
-                                    </form>
-                                </article>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </section>
-            <section id="chartsection" class="column is-one-quarter tile is-ancestor pt-6 is-vertical is-flex-mobile">
-                <div class="tile is-parent">
-                    <article class="tile is-child notification has-background-danger has-text-danger-light">
-                        <div data-aos="flip-left"
-                        data-aos-easing="ease-out-cubic"
-                        data-aos-duration="2000" class="content chartBox" id=" chartContent">
-                            <p class="title">Comparable Ratings</p>
-                            <p class="is-italic has-text-warning">** hover over chart to get specific rating**</p>
-
-                            <canvas class=" notification has-background-grey-lighter" id="ratingChart" height="150"
-                                width="175"></canvas>
-
-
-                            <canvas  class="notification has-background-grey-lighter" height="150" width="175"
-                                id="popChart"></canvas>
-
-                            <p class="subtitle legendBox"></p>
-                            <div class="content">
-                                <!-- Content -->
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-        </section>
-        <div id="modalWindow" style="display: none;">
-            <div class="modalcontent">
-                <p>Please Try Again! Current name not found.</p>
-                <span id="xbtn" onclick="hideModal()">&#10006;</span>
-            </div>
+    <div id="carousel-container" class="d-flex justify-content-center mt-2">
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner mt-3">
+            <!-- Carousel items go here -->
+          </div>
         </div>
+      </div>
+      
+    
+      <div class="container mt-5">
+        <div class="row ">
+          <section class="col-md-3">
+            <!-- Left column content -->
+          </section>
+          <section class="col-md-6">
+            <!-- Middle column content -->
+          </section>
+          <section class="col-md-3">
+            <!-- Right column content -->
+          </section>
+        </div>
+      </div>
+      
+      <div id="modalWindow" style="display: none">
+        <div class="modalcontent">
+          <p>Please Try Again! Current name not found.</p>
+          <span id="xbtn" onclick="hideModal()">&#10006;</span>
+        </div>
+      </div>
+    <main>
+      <section class="columns">
+        <section
+          class="column is-one-quarter tile is-ancestor pt-6 is-vertical"
+        >
+          <div class="tile is-parent">
+            <article
+              data-aos="flip-right"
+              class="tile is-child notification has-background-warning"
+            >
+              <div class="content">
+                <p class="title">Wishlist Items</p>
+                <p class="subtitle"></p>
+                <p>Wishlist Count: <span id="wishlist-count">0</span></p>
+                <div id="wishlist-id"></div>
+              </div>
+            </article>
+          </div>
+        </section>
+        <section class="column is-half tile is-ancestor pt-6">
+          <div class="tile is-6 is-parent is-vertical">
+            <article
+              class="tile is-child notification is-danger"
+              data-aos="fade-down-left"
+            >
+              <p class="title" id="vgTitle"></p>
+              <p class="subtitle" id="releaseDate"></p>
+              <div class="content">
+                <article class="tile is-child notification is-primary">
+                  <p class="title">Description:</p>
+                  <div class="content">
+                    <p class="subtitle" id="vgDescription"></p>
+                  </div>
+                </article>
+              </div>
+            </article>
+          </div>
+
+          <div class="tile is-6 is-parent is-vertical">
+            <div class="tile is-child is-vertical">
+              <article
+                data-aos="fade-up-right"
+                class="tile is-child notification is-info"
+              >
+                <p class="title">Rating:</p>
+                <p class="subtitle" id="vgRating"></p>
+              </article>
+              <article
+                data-aos="fade-up-left"
+                class="tile is-child notification is-success"
+                id="vgPlatformscontainer"
+              >
+                <p class="title">Platforms:</p>
+                <p class="subtitle" id="vgPlatforms"></p>
+              </article>
+              <article
+                data-aos="fade-up"
+                data-aos-anchor-placement="center-bottom"
+                class="tile notification has-background-grey-lighter"
+                id="vgimgcontainer"
+              >
+                <div class="content">
+                  <div class="content" id="vgImages">
+                    <!-- Content -->
+                  </div>
+                </div>
+              </article>
+              <article
+                data-aos="zoom-out"
+                class="tile is-child notification is-primary is-flex is-justify-content-center"
+                id="mediabutton"
+              >
+                <p class="title"></p>
+                <p class="subtitle"></p>
+                <div class="content">
+                  <!-- tile is-child notification has-background-link -->
+                  <article class="" id="saveform">
+                    <p class="title"></p>
+                    <p class="subtitle"></p>
+                    <form>
+                      <button
+                        type="submit"
+                        class="notification has-background-danger is-flex is-justify-content-center"
+                        id="saveBtn"
+                      >
+                        Save To Wishlist
+                      </button>
+                    </form>
+                  </article>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+        <section
+          id="chartsection"
+          class="column is-one-quarter tile is-ancestor pt-6 is-vertical is-flex-mobile"
+        >
+          <div class="tile is-parent">
+            <article
+              class="tile is-child notification has-background-danger has-text-danger-light"
+            >
+              <div
+                data-aos="flip-left"
+                data-aos-easing="ease-out-cubic"
+                data-aos-duration="2000"
+                class="content chartBox"
+                id=" chartContent"
+              >
+                <p class="title">Comparable Ratings</p>
+                <p class="is-italic has-text-warning">
+                  ** hover over chart to get specific rating**
+                </p>
+
+                <canvas
+                  class="notification has-background-grey-lighter"
+                  id="ratingChart"
+                  height="150"
+                  width="175"
+                ></canvas>
+
+                <canvas
+                  class="notification has-background-grey-lighter"
+                  height="150"
+                  width="175"
+                  id="popChart"
+                ></canvas>
+
+                <p class="subtitle legendBox"></p>
+                <div class="content">
+                  <!-- Content -->
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+      <div id="modalWindow" style="display: none">
+        <div class="modalcontent">
+          <p>Please Try Again! Current name not found.</p>
+          <span id="xbtn" onclick="hideModal()">&#10006;</span>
+        </div>
+      </div>
     </main>
-
-</body>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="./assets/js/script.js"></script>
-
+  </body>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./assets/js/script.js"></script>
 </html>
