@@ -165,3 +165,12 @@ i:hover {
   right: -120px; /* Adjust the right position as needed */
   
 }
+body {
+  background-image: url('your-background-image-url-here');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  overflow: auto;
+  height: 100%;
+}
