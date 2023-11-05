@@ -47,6 +47,8 @@
         >
       </div>
       <div class="navbar-menu">
+        
+        </div>
         <div class="navbar-start"></div>
         <div class="navbar-end">
           <form id="form" role="search" class="field is-grouped mb-0">
@@ -103,7 +105,10 @@
         </a>
       </div>
     </div>
-
+    <div class="modalcontent" id="alertModal">
+        <p id="alertMessage">This is an alert message.</p>
+        <span id="xbtn" onclick="hideAlertModal()">&#10006;</span>
+      </div>
     <main>
       <section class="columns">
         <section
@@ -241,12 +246,7 @@
           </div>
         </section>
       </section>
-      <div id="modalWindow" style="display: none">
-        <div class="modalcontent">
-          <p>Please Try Again! Current name not found.</p>
-          <span id="xbtn" onclick="hideModal()">&#10006;</span>
-        </div>
-      </div>
+
     </main>
   </body>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

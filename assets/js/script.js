@@ -13,13 +13,18 @@ const wishlistCount = document.getElementById("wishlist-count");
 AOS.init();
 
 // Function to show the modal
-function showModal() {
-  modalWindow.style.display = "block";
+const alertModal = document.getElementById("alertModal"); // Assuming you have an alert modal element with this ID
+
+// Function to show the custom alert modal
+function showAlertModal(message) {
+  const alertMessage = document.getElementById("alertMessage"); // Assuming you have an element to display the message in your alert modal
+  alertMessage.textContent = message;
+  alertModal.style.display = "block";
 }
 
-// Function to hide the modal
-function hideModal() {
-  modalWindow.style.display = "none";
+// Function to hide the custom alert modal
+function hideAlertModal() {
+  alertModal.style.display = "none";
 }
 
 // Function to clear the game details container
@@ -344,70 +349,6 @@ function searchGame(inputVal) {
     });
 }
 
-// Function to populate carousel with images
-function populateCarouselWithImages(gameResults) {
-  const carousel = document.querySelector("#myCarousel .carousel-inner");
-
-  for (let i = 0; i < gameResults.length; i += 4) {
-    const chunk = gameResults.slice(i, i + 4);
-    const item = document.createElement("div");
-    item.className = "carousel-item";
-
-    if (i === 0) {
-      item.classList.add("active");
-    }
-
-    const row = document.createElement("div");
-    row.className = "row";
-
-    chunk.forEach(function (gameData) {
-      const gameImageURL = gameData.background_image;
-      const gameName = gameData.name;
-      const col = document.createElement("div");
-      col.className = "col";
-
-      const imageContainer = document.createElement("div");
-      imageContainer.style.width = "300px";
-      imageContainer.style.height = "200px";
-      imageContainer.style.overflow = "hidden";
-      imageContainer.style.position = "relative";
-
-      const image = document.createElement("img");
-      image.src = gameImageURL;
-      image.style.width = "100%";
-      image.style.height = "100%";
-
-      const gameNameText = document.createElement("p");
-      gameNameText.textContent = gameName;
-      gameNameText.style.position = "absolute";
-      gameNameText.style.bottom = "0";
-      gameNameText.style.left = "0";
-      gameNameText.style.right = "0";
-      gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
-      gameNameText.style.color = "white";
-      gameNameText.style.padding = "5px";
-
-      // Add a click event listener to the image
-      image.addEventListener("click", () => {
-        // Set the game name as the value of the search bar
-        input.value = gameName;
-        // Trigger the search by clicking the search button
-        document.getElementById("SearchBtn").click();
-      });
-
-      imageContainer.appendChild(image);
-      imageContainer.appendChild(gameNameText);
-      col.appendChild(imageContainer);
-      row.appendChild(col);
-    });
-
-    item.appendChild(row);
-    carousel.appendChild(item);
-  }
-}
-
-
-
 
 // Function to load the page
 function pageLoad() {
@@ -456,7 +397,7 @@ function pageLoad() {
             var gameResults = pageLoadRatingData.results.slice(0, 20);
           
             // Group the game results into chunks of 4
-            var chunkSize = 4;
+            var chunkSize = 5;
             for (var i = 0; i < gameResults.length; i += chunkSize) {
               var chunk = gameResults.slice(i, i + chunkSize);
           
@@ -475,8 +416,8 @@ function pageLoad() {
               // Loop through the chunk of game results
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
-                var gameName = gameData.name;
-          
+                var gameName = gameData.slug;
+          console.log(gameData);
                 // Create a column for each image
                 var col = document.createElement("div");
                 col.className = "col";
