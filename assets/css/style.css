@@ -155,3 +155,13 @@ i:hover {
 #wishlist-id{
   display: block;
 }
+/* Move the carousel control icons to the left */
+.carousel-control-prev {
+  left:-120px; /* Adjust the left position as needed */ /* Ensure they are on the left side */
+}
+/* Move the carousel control icons to the right */
+
+.carousel-control-next { /* Ensure they are on the right side */
+  right: -120px; /* Adjust the right position as needed */
+  
+}

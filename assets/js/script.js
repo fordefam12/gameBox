@@ -1,12 +1,14 @@
 const rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
 const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
 const wishlistArray = [];
-
 const modalWindow = document.getElementById("modalWindow");
 const saveEl = document.getElementById("saveBtn");
 const input = document.getElementById("query");
 const wishlist = document.getElementById("wishlist-id");
 const wishlistCount = document.getElementById("wishlist-count");
+
+
+
 
 AOS.init();
 
@@ -141,7 +143,7 @@ function renderWishlist() {
 
 // Function to initialize the page
 function init() {
-  const wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
+  var wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
   if (wishlistItems !== null) {
     wishlistArray = wishlistItems;
   }
@@ -210,16 +212,142 @@ function searchGame(inputVal) {
       const genreURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&genres=${genreString}`;
 
       fetch(genreURL)
-        .then((res) => res.json())
-        .then((ratingData) => {
-          // Rest of the code to display additional game details and charts...
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (ratingData) {
+        console.log(ratingData);
+
+        var game1 = data.name;
+        var game2 = ratingData.results[1].name;
+        var game3 = ratingData.results[2].name;
+        var game4 = ratingData.results[3].name;
+        var game5 = ratingData.results[4].name;
+
+        var gameRating1 = data.rating;
+        var gameRating2 = ratingData.results[0].rating;
+        var gameRating3 = ratingData.results[1].rating;
+        var gameRating4 = ratingData.results[2].rating;
+        var gameRating5 = ratingData.results[3].rating;
+
+        const ctx = document.getElementById("ratingChart");
+        // destroy chart code
+        var chartStatus = Chart.getChart("ratingChart"); // <canvas> id
+        if (chartStatus != undefined) {
+          chartStatus.destroy();
+        }
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: [game1, game2, game3, game4, game5],
+            datasets: [
+              {
+                label: "Rating",
+
+                data: [
+                  gameRating1,
+                  gameRating2,
+                  gameRating3,
+                  gameRating4,
+                  gameRating5,
+                ],
+                borderWidth: 2,
+                backgroundColor: "rgb(250, 6, 6)",
+              },
+            ],
+          },
+          options: {
+            animation: {
+              borderWidth: {
+                duration: 1000,
+                easing: "linear",
+                to: 1,
+                from: 5,
+                loop: true,
+              },
+            },
+            animations: {
+              backgroundColor: {
+                type: "color",
+                duration: 1000,
+                easing: "linear",
+                to: "blue",
+                from: "red",
+                loop: true,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
         });
+
+        const ctx1 = document.getElementById("popChart");
+
+        // destroy chart code
+        var chartStatus = Chart.getChart("popChart"); // <canvas> id
+        if (chartStatus != undefined) {
+          chartStatus.destroy();
+        }
+
+        new Chart(ctx1, {
+          type: "line",
+          data: {
+            labels: [game1, game2, game3, game4, game5],
+            datasets: [
+              {
+                label: "Rating",
+                data: [
+                  gameRating1,
+                  gameRating2,
+                  gameRating3,
+                  gameRating4,
+                  gameRating5,
+                ],
+                borderWidth: 5,
+                backgroundColor: "rgb(250, 6, 6)",
+              },
+            ],
+          },
+          options: {
+            animation: {
+              tension: {
+                duration: 1000,
+                easing: "linear",
+                from: 1,
+                to: 2,
+                loop: true,
+              },
+              backgroundColor: {
+                type: "color",
+                duration: 1000,
+                easing: "linear",
+                to: "blue",
+                from: "red",
+                loop: true,
+              },
+            },
+
+            scales: {
+              y: {
+                // defining min and max so hiding the dataset does not change scale range
+                min: 0,
+                max: 5,
+              },
+            },
+          },
+        });
+      });
     });
 }
 
 // Function to populate carousel with images
 function populateCarouselWithImages(gameResults) {
   const carousel = document.querySelector("#myCarousel .carousel-inner");
+
   for (let i = 0; i < gameResults.length; i += 4) {
     const chunk = gameResults.slice(i, i + 4);
     const item = document.createElement("div");
@@ -259,6 +387,14 @@ function populateCarouselWithImages(gameResults) {
       gameNameText.style.color = "white";
       gameNameText.style.padding = "5px";
 
+      // Add a click event listener to the image
+      image.addEventListener("click", () => {
+        // Set the game name as the value of the search bar
+        input.value = gameName;
+        // Trigger the search by clicking the search button
+        document.getElementById("SearchBtn").click();
+      });
+
       imageContainer.appendChild(image);
       imageContainer.appendChild(gameNameText);
       col.appendChild(imageContainer);
@@ -269,6 +405,9 @@ function populateCarouselWithImages(gameResults) {
     carousel.appendChild(item);
   }
 }
+
+
+
 
 // Function to load the page
 function pageLoad() {
@@ -311,52 +450,50 @@ function pageLoad() {
           console.log(pageLoadRatingData);
 
           function populateCarouselWithImages() {
-            var carousel = document.querySelector(
-              "#myCarousel .carousel-inner"
-            );
-
+            var carousel = document.querySelector("#myCarousel .carousel-inner");
+          
             // Extract background images and game names from the first 20 results
             var gameResults = pageLoadRatingData.results.slice(0, 20);
-
-            // Group the game results into chunks of 3
+          
+            // Group the game results into chunks of 4
             var chunkSize = 4;
             for (var i = 0; i < gameResults.length; i += chunkSize) {
               var chunk = gameResults.slice(i, i + chunkSize);
-
+          
               var item = document.createElement("div");
               item.className = "carousel-item";
-
+          
               // Add the "active" class to the first item
               if (i === 0) {
                 item.classList.add("active");
               }
-
+          
               // Create a row for the images
               var row = document.createElement("div");
               row.className = "row";
-
+          
               // Loop through the chunk of game results
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.name;
-
+          
                 // Create a column for each image
                 var col = document.createElement("div");
                 col.className = "col";
-
+          
                 // Create a container to set a fixed size
                 var imageContainer = document.createElement("div");
                 imageContainer.style.width = "300px"; // Set the desired width
                 imageContainer.style.height = "200px"; // Set the desired height
                 imageContainer.style.overflow = "hidden";
                 imageContainer.style.position = "relative"; // To position text inside
-
+          
                 // Create an image element
                 var image = document.createElement("img");
                 image.src = gameImageURL;
                 image.style.width = "100%"; // Make the image fill the container
                 image.style.height = "100%";
-
+          
                 // Create a text element for the game name
                 var gameNameText = document.createElement("p");
                 gameNameText.textContent = gameName;
@@ -367,28 +504,39 @@ function pageLoad() {
                 gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
                 gameNameText.style.color = "white";
                 gameNameText.style.padding = "5px";
-
+          
+                // Add a click event listener to the image
+                image.addEventListener("click", function () {
+                  // Set the game name as the value of the search input
+                  var searchInput = document.getElementById("query");
+                  searchInput.value = gameName;
+          
+                  // Trigger the search by clicking the search button
+                  var searchButton = document.getElementById("SearchBtn");
+                  searchButton.click();
+                });
+          
                 // Add the image and game name to the container
                 imageContainer.appendChild(image);
                 imageContainer.appendChild(gameNameText);
-
+          
                 // Add the container to the column
                 col.appendChild(imageContainer);
-
+          
                 // Add the column to the row
                 row.appendChild(col);
               });
-
+          
               // Add the row to the item
               item.appendChild(row);
-
+          
               // Add the item to the carousel
               carousel.appendChild(item);
             }
           }
-
+          
           populateCarouselWithImages();
-
+          
           var game1 = pageLoadData.name;
           var game2 = pageLoadRatingData.results[1].name;
           var game3 = pageLoadRatingData.results[2].name;
@@ -523,18 +671,18 @@ function handleSearchButtonClick(event) {
 // Event listeners
 document.getElementById("SearchBtn").addEventListener("click", handleSearchButtonClick);
 
-function init() {
-  // Get stored wishlist items from localStorage
-  var wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
+// function init() {
+//   // Get stored wishlist items from localStorage
+//   var wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
 
-  // If wishlist was retrieved from localStorage, update the wishlist array to it
-  if (wishlistItems !== null) {
-    wishlistArray = wishlistItems;
-  }
+//   // If wishlist was retrieved from localStorage, update the wishlist array to it
+//   if (wishlistItems !== null) {
+//     wishlistArray = wishlistItems;
+//   }
 
-  // This is a helper function that will render the wishlist to the DOM
-  renderWishlist();
-}
+//   // This is a helper function that will render the wishlist to the DOM
+//   renderWishlist();
+// }
 
 
 saveEl.addEventListener("click", (event) => {
