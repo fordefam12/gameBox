@@ -1,96 +1,313 @@
-var rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
-var fullGameList = "https://api.rawg.io/api/games?key=" + rawgAPIKey;
-var wishlistArray = []; // Add this line at the beginning of your script.
+const rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
+const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
+const wishlistArray = [];
+
+const modalWindow = document.getElementById("modalWindow");
+const saveEl = document.getElementById("saveBtn");
+const input = document.getElementById("query");
+const wishlist = document.getElementById("wishlist-id");
+const wishlistCount = document.getElementById("wishlist-count");
 
 AOS.init();
 
-var modalWindow = document.getElementById("modalWindow");
-
+// Function to show the modal
 function showModal() {
   modalWindow.style.display = "block";
 }
 
+// Function to hide the modal
 function hideModal() {
   modalWindow.style.display = "none";
 }
 
-const saveEl = document.getElementById("saveBtn");
-const input = document.getElementById("query");
-const wishlist = document.getElementById("wishlist-id");
-var wishlistCount = document.getElementById("wishlist-count");
-
-function searchBar(event) {
-  event.preventDefault();
-  var inputVal = input.value;
-  var videoGameContainerParent = document.getElementById("vgImages");
-  videoGameContainerParent.innerHTML = ""; // Clear the game details container
-  searchGame(inputVal);
+// Function to clear the game details container
+function clearGameDetailsContainer() {
+  const videoGameContainerParent = document.getElementById("vgImages");
+  videoGameContainerParent.innerHTML = "";
 }
 
+// Function to clear the previous game images
+function clearPreviousGameImages() {
+  const videoGameContainer = document.getElementById("vgImages");
+  videoGameContainer.innerHTML = "";
+}
 
-function pageLoad() {
-  var pageLoadURL =
-    "https://api.rawg.io/api/games/borderlands?key=" + rawgAPIKey;
+// Function to render items in the wishlist as <li> elements
+function renderWishlist() {
+  // Clear wishlist element and update wishlist count
+  wishlist.innerHTML = "";
+  const wishlistArray = JSON.parse(localStorage.getItem("wishlist")) || [];
+  wishlistCount.textContent = wishlistArray.length;
 
-  fetch(pageLoadURL)
-    .then(function (res) {
+  wishlistArray.forEach((wishlistGame, i) => {
+    const li = document.createElement("button");
+    li.textContent = wishlistGame;
+    li.setAttribute("data-index", i);
+    li.classList.add("liStyles");
+    li.style.cssText = `
+      margin-right: 1%;
+      margin-bottom: 4%;
+      background-color: hsl(204, 86%, 53%);
+      width: 75%;
+      color: white;
+      border-radius: 2px;
+      border: none;
+      padding: 3%;
+      display: flex;
+      justify-content: space-between;
+    `;
+
+    const removeButton = document.createElement("button");
+    removeButton.style.cssText = `
+      margin-left: 1%;
+      background-color: hsl(348, 100%, 61%);
+      border: 1px solid rgba(255, 182, 182, 0.534);
+      padding: 1%;
+      display: flex;
+      height: 25px;
+    `;
+    removeButton.classList.add("removebuttonstyle", "fa", "fa-remove");
+    removeButton.textContent = "";
+    removeButton.dataset.game = wishlistGame;
+
+    removeButton.addEventListener("click", (event) => {
+      const gameTitle = event.target.getAttribute("data-game");
+      const updatedWishlist = wishlistArray.filter((game) => game !== gameTitle);
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+      renderWishlist();
+    });
+
+    const addMouseOverAndOutEvents = (element, stylesOnMouseOver, stylesOnMouseOut) => {
+      element.addEventListener("mouseover", () => {
+        element.style.cssText = stylesOnMouseOver;
+      });
+
+      element.addEventListener("mouseout", () => {
+        element.style.cssText = stylesOnMouseOut;
+      });
+    };
+
+    addMouseOverAndOutEvents(removeButton, `
+      margin-left: 1%;
+      background-color: hsl(348, 100%, 61%);
+      border: none;
+      padding: 1%;
+      cursor: pointer;
+      display: flex;
+      height: 25px;
+    `, `
+      margin-left: 1%;
+      background-color: hsl(348, 100%, 61%);
+      border: 1px solid rgba(255, 182, 182, 0.534);
+      padding: 1%;
+      height: 25px;
+    `);
+
+    addMouseOverAndOutEvents(li, `
+      margin-right: 1%;
+      margin-bottom: 4%;
+      background-color: hsl(204, 86%, 53%);
+      width: 75%;
+      color: white;
+      border-radius: 2px;
+      border: none;
+      padding: 3%;
+      display: flex;
+      justify-content: space-between;
+    `, `
+      margin-right: 1%;
+      margin-bottom: 4%;
+      background-color: hsl(204, 86%, 53%);
+      width: 75%;
+      color: white;
+      border-radius: 2px;
+      border: 1px solid blue;
+      padding: 3%;
+      display: flex;
+      justify-content: space-between;
+    `);
+
+    li.addEventListener("click", () => {
+      const gameName = li.textContent;
+      const videoGameContainerParent = document.getElementById("vgImages");
+      videoGameContainerParent.innerHTML = "";
+      searchGame(gameName.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase());
+    });
+
+    li.appendChild(removeButton);
+    wishlist.appendChild(li);
+  });
+}
+
+// Function to initialize the page
+function init() {
+  const wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
+  if (wishlistItems !== null) {
+    wishlistArray = wishlistItems;
+  }
+  renderWishlist();
+}
+
+// Function to store a game in the wishlist
+function storeWishlist(game) {
+  const wishlistItems = JSON.parse(localStorage.getItem("wishlist")) || [];
+  if (!wishlistItems.includes(game)) {
+    wishlistItems.push(game);
+    localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
+    renderWishlist();
+  }
+}
+
+// Function to search for a game
+function searchGame(inputVal) {
+  const specificGameURL = `https://api.rawg.io/api/games/${inputVal.replace(/\s+/g, "-").toLowerCase()}?key=${rawgAPIKey}`;
+
+  fetch(specificGameURL)
+    .then((res) => {
+      if (res.status === 404) {
+        showModal();
+        return null;
+      }
       return res.json();
     })
-    .then(function (pageLoadData) {
-      var videoGameImageURLDynamic2 = pageLoadData.background_image_additional;
+    .then((data) => {
+      if (data === null) {
+        return;
+      }
+
+      const videoGameTitle = document.querySelector("#vgTitle");
+      videoGameTitle.textContent = data.name;
+      saveEl.setAttribute("data-game", data.name);
+
+      const videoGameRelease = document.querySelector("#releaseDate");
+      videoGameRelease.textContent = `Released: ${data.released}`;
+
+      const videoGameDescription = document.querySelector("#vgDescription");
+      videoGameDescription.textContent = data.description_raw;
+
+      const videoGameRating = document.querySelector("#vgRating");
+      videoGameRating.textContent = data.esrb_rating.name || "";
+
+      const videoGamePlatforms = document.querySelector("#vgPlatforms");
+      const platformsString = data.parent_platforms.map((platform) => platform.platform.name).join(", ");
+      videoGamePlatforms.textContent = platformsString;
+
+      clearPreviousGameImages();
+
+      const videoGameContainer = document.getElementById("vgImages");
+      const videoGameImage = document.createElement("img");
+      videoGameContainer.appendChild(videoGameImage);
+
+      const videoGameImageURLDynamic = data.background_image;
+      const videoGameImageURLDynamic2 = data.background_image_additional;
+      videoGameImage.setAttribute("src", videoGameImageURLDynamic);
+
       document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
       document.body.style.backgroundRepeat = "no-repeat";
       document.body.style.backgroundSize = "cover";
 
-      console.log(pageLoadData);
+      const genreString = data.genres.map((genre) => genre.id).join(",");
+      const genreURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&genres=${genreString}`;
 
-      var videoGameTitle = document.querySelector("#vgTitle");
+      fetch(genreURL)
+        .then((res) => res.json())
+        .then((ratingData) => {
+          // Rest of the code to display additional game details and charts...
+        });
+    });
+}
+
+// Function to populate carousel with images
+function populateCarouselWithImages(gameResults) {
+  const carousel = document.querySelector("#myCarousel .carousel-inner");
+  for (let i = 0; i < gameResults.length; i += 4) {
+    const chunk = gameResults.slice(i, i + 4);
+    const item = document.createElement("div");
+    item.className = "carousel-item";
+
+    if (i === 0) {
+      item.classList.add("active");
+    }
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    chunk.forEach(function (gameData) {
+      const gameImageURL = gameData.background_image;
+      const gameName = gameData.name;
+      const col = document.createElement("div");
+      col.className = "col";
+
+      const imageContainer = document.createElement("div");
+      imageContainer.style.width = "300px";
+      imageContainer.style.height = "200px";
+      imageContainer.style.overflow = "hidden";
+      imageContainer.style.position = "relative";
+
+      const image = document.createElement("img");
+      image.src = gameImageURL;
+      image.style.width = "100%";
+      image.style.height = "100%";
+
+      const gameNameText = document.createElement("p");
+      gameNameText.textContent = gameName;
+      gameNameText.style.position = "absolute";
+      gameNameText.style.bottom = "0";
+      gameNameText.style.left = "0";
+      gameNameText.style.right = "0";
+      gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
+      gameNameText.style.color = "white";
+      gameNameText.style.padding = "5px";
+
+      imageContainer.appendChild(image);
+      imageContainer.appendChild(gameNameText);
+      col.appendChild(imageContainer);
+      row.appendChild(col);
+    });
+
+    item.appendChild(row);
+    carousel.appendChild(item);
+  }
+}
+
+// Function to load the page
+function pageLoad() {
+  const pageLoadURL = `https://api.rawg.io/api/games/borderlands?key=${rawgAPIKey}`;
+
+  fetch(pageLoadURL)
+    .then((res) => res.json())
+    .then((pageLoadData) => {
+      const videoGameImageURLDynamic2 = pageLoadData.background_image_additional;
+      document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
+      document.body.style.backgroundRepeat = "no-repeat";
+      document.body.style.backgroundSize = "cover";
+
+      const videoGameTitle = document.querySelector("#vgTitle");
       saveEl.setAttribute("data-game", pageLoadData.name);
-      var videoGameDesc = document.querySelector("#vgDescription");
-      var videoGameDate = document.querySelector("#releaseDate");
-      var videoGameRating = document.querySelector("#vgRating");
-      var videoGamePlatforms = document.querySelector("#vgPlatforms");
-      var videoGameContainer = document.getElementById("vgImages");
-      var videoGameImage = document.createElement("img");
+      const videoGameDesc = document.querySelector("#vgDescription");
+      const videoGameDate = document.querySelector("#releaseDate");
+      const videoGameRating = document.querySelector("#vgRating");
+      const videoGamePlatforms = document.querySelector("#vgPlatforms");
+      const videoGameContainer = document.getElementById("vgImages");
+      const videoGameImage = document.createElement("img");
       videoGameContainer.appendChild(videoGameImage);
-      var videoGameImageURL = pageLoadData.background_image;
+      const videoGameImageURL = pageLoadData.background_image;
       videoGameImage.setAttribute("src", videoGameImageURL);
 
-      console.log(videoGameImageURL);
-
-      videoGameDate.textContent = "Released: " + pageLoadData.released;
+      videoGameDate.textContent = `Released: ${pageLoadData.released}`;
       videoGameDesc.textContent = pageLoadData.description_raw;
       videoGameTitle.textContent = pageLoadData.name;
-      videoGameRating.textContent = pageLoadData.esrb_rating.name;
-      var staticPlatformsString = "";
-      for (var j = 0; j < pageLoadData.parent_platforms.length; j++) {
-        staticPlatformsString +=
-          pageLoadData.parent_platforms[j].platform.name + ", ";
-      }
-      staticPlatformsString = staticPlatformsString.slice(0, -2);
-      console.log(staticPlatformsString);
+      videoGameRating.textContent = pageLoadData.esrb_rating.name || "";
+      const staticPlatformsString = pageLoadData.parent_platforms.map((platform) => platform.platform.name).join(", ");
       videoGamePlatforms.textContent = staticPlatformsString;
 
-      var genreStringOnLoad = "";
-      for (var i = 0; i < pageLoadData.genres.length; i++) {
-        console.log(pageLoadData.genres[i].id);
-        genreStringOnLoad += pageLoadData.genres[i].id + ",";
-      }
-      genreStringOnLoad = genreStringOnLoad.slice(0, -1);
-      console.log(genreStringOnLoad);
-
-      var pageLoadGenre =
-        "https://api.rawg.io/api/games" +
-        "?key=" +
-        rawgAPIKey +
-        "&genres=" +
-        genreStringOnLoad;
+      const genreStringOnLoad = pageLoadData.genres.map((genre) => genre.id).join(",");
+      const pageLoadGenre = `https://api.rawg.io/api/games?key=${rawgAPIKey}&genres=${genreStringOnLoad}`;
 
       fetch(pageLoadGenre)
-        .then(function (res) {
-          return res.json();
-        })
-        .then(function (pageLoadRatingData) {
+        .then((res) => res.json())
+        .then((pageLoadRatingData) => {
+          // Rest of the code to display additional game details and charts...
           console.log(pageLoadRatingData);
 
           function populateCarouselWithImages() {
@@ -289,202 +506,43 @@ function pageLoad() {
               },
             },
           });
+        
         });
+        renderWishlist();
     });
 }
 
-function searchGame(inputVal) {
-  var specificGameURL =
-    "https://api.rawg.io/api/games/" +
-    inputVal.replace(/\s+/g, "-").toLowerCase() +
-    "?key=" +
-    rawgAPIKey;
-
-  fetch(specificGameURL)
-    .then(function (res) {
-      if (res.status === 404) {
-        // Handle the case when the game is not found
-        showModal();
-        return null;
-      }
-      return res.json();
-    })
-    .then(function (data) {
-      if (data === null) {
-        return;
-      }
-
-      var videoGameTitle = document.querySelector("#vgTitle");
-      videoGameTitle.textContent = data.name;
-      saveEl.setAttribute("data-game", data.name);
-      var videoGameRelease = document.querySelector("#releaseDate");
-      videoGameRelease.textContent = "Released:" + data.released;
-      var videoGameDescription = document.querySelector("#vgDescription");
-      videoGameDescription.textContent = data.description_raw;
-      var videoGameRating = document.querySelector("#vgRating");
-      videoGameRating.textContent = data.esrb_rating.name;
-      if (data.esrb_rating.name === null) {
-        videoGameRating.textContent = "";
-      }
-      var videoGamePlatforms = document.querySelector("#vgPlatforms");
-      var platformsString = "";
-      for (var j = 0; j < data.parent_platforms.length; j++) {
-        platformsString += data.parent_platforms[j].platform.name + ", ";
-      }
-      platformsString = platformsString.slice(0, -2);
-      videoGamePlatforms.textContent = platformsString;
-
-      var videoGameContainer = document.getElementById("vgImages");
-      videoGameContainer.innerHTML = ""; // Clear the previous game images
-      var videoGameImage = document.createElement("img");
-      videoGameContainer.appendChild(videoGameImage);
-      var videoGameImageURLDynamic = data.background_image;
-      var videoGameImageURLDynamic2 = data.background_image_additional;
-      videoGameImage.setAttribute("src", videoGameImageURLDynamic);
-
-      document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
-      document.body.style.backgroundRepeat = "no-repeat";
-      document.body.style.backgroundSize = "cover";
-
-      var genreString = "";
-      for (var i = 0; i < data.genres.length; i++) {
-        genreString += data.genres[i].id + ",";
-      }
-      genreString = genreString.slice(0, -1);
-
-      var genreURL =
-        "https://api.rawg.io/api/games" +
-        "?key=" +
-        rawgAPIKey +
-        "&genres=" +
-        genreString;
-
-      fetch(genreURL)
-        .then(function (res) {
-          return res.json();
-        })
-        .then(function (ratingData) {
-          // Rest of the code to display additional game details and charts...
-        });
-    });
+// Function to handle the click event for the Search button
+function handleSearchButtonClick(event) {
+  event.preventDefault();
+  const inputVal = input.value;
+  clearGameDetailsContainer();
+  searchGame(inputVal);
 }
 
-// The following function renders items in a todo list as <li> elements
-function renderWishlist() {
-  // Clear wishlist element and update wishlist count
-  wishlist.innerHTML = "";
-  var wishlistArray = JSON.parse(localStorage.getItem("wishlist")) || [];
-  wishlistCount.textContent = wishlistArray.length;
+// Event listeners
+document.getElementById("SearchBtn").addEventListener("click", handleSearchButtonClick);
 
-  // Render a new li for each wishlist item
-  for (var i = 0; i < wishlistArray.length; i++) {
-    var wishlistGame = wishlistArray[i];
-
-    var li = document.createElement("button");
-    li.textContent = wishlistGame;
-    li.setAttribute("data-index", i);
-    li.setAttribute(
-      "style",
-      "margin-right: 1%; margin-bottom: 4%; background-color: hsl(204, 86%, 53%); width: 75%; color: white; border-radius: 2px; border: none; padding: 3%; display: flex; justify-content: space-between;"
-    );
-    li.setAttribute("class", "liStyles");
-
-    var removeButton = document.createElement("button");
-    removeButton.setAttribute(
-      "style",
-      "margin-left: 1%; background-color: hsl(348, 100%, 61%); border: 1px solid rgba(255, 182, 182, 0.534); padding: 1%; display: flex; height: 25px;"
-    );
-    // removeButton.style.borderHover = "none";
-    removeButton.setAttribute("class", "removebuttonstyle fa fa-remove");
-    removeButton.textContent = "";
-    // .class.add bulma css class here
-    removeButton.dataset.game = wishlistGame;
-    removeButton.addEventListener("click", function (event) {
-      var gameTitle = event.target.getAttribute("data-game");
-      var wishlistArray = JSON.parse(localStorage.getItem("wishlist")) || [];
-      var updatedWishlist = wishlistArray.filter(function (game) {
-        return game !== gameTitle;
-      });
-      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-      renderWishlist();
-    });
-    removeButton.addEventListener("mouseover", function (event) {
-      if (event.target.classList.contains("removebuttonstyle")) {
-        event.target.setAttribute(
-          "style",
-          "margin-left: 1%; background-color: hsl(348, 100%, 61%); border: none; padding: 1%; cursor: pointer; display: flex; height: 25px;"
-        );
-      }
-    });
-    removeButton.addEventListener("mouseout", function (event) {
-      if (event.target.classList.contains("removebuttonstyle")) {
-        event.target.setAttribute(
-          "style",
-          "margin-left: 1%; background-color: hsl(348, 100%, 61%); border: 1px solid rgba(255, 182, 182, 0.534); padding: 1%; height: 25px;"
-        );
-      }
-    });
-    li.addEventListener("mouseover", function (event) {
-      if (event.target.classList.contains("liStyles")) {
-        event.target.setAttribute(
-          "style",
-          "margin-right: 1%; margin-bottom: 4%; background-color: hsl(204, 86%, 53%); width: 75%; color: white; border-radius: 2px; border: none; padding: 3%; display: flex; justify-content: space-between;"
-        );
-      }
-    });
-    li.addEventListener("mouseout", function (event) {
-      if (event.target.classList.contains("liStyles")) {
-        event.target.setAttribute(
-          "style",
-          "margin-right: 1%; margin-bottom: 4%; background-color: hsl(204, 86%, 53%); width: 75%; color: white; border-radius: 2px; border: 1px solid blue; padding: 3%; display: flex; justify-content: space-between;"
-        );
-      }
-    });
-    li.addEventListener("click", function () {
-      var gameName = this.textContent;
-      var videoGameContainerParent = document.getElementById("vgImages");
-      videoGameContainerParent.innerHTML = "";
-      searchGame(gameName.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase());
-    });
-
-    li.appendChild(removeButton);
-    wishlist.appendChild(li);
-  }
-}
-
-// This function is being called below and will run when the page loads.
 function init() {
   // Get stored wishlist items from localStorage
   var wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
 
-  // If wishlist were retrieved from localStorage, update the wishlist array to it
+  // If wishlist was retrieved from localStorage, update the wishlist array to it
   if (wishlistItems !== null) {
     wishlistArray = wishlistItems;
   }
 
-  // This is a helper function that will render wishlist to the DOM
+  // This is a helper function that will render the wishlist to the DOM
   renderWishlist();
 }
 
-function storeWishlist(game) {
-  // Stringify and set key in localStorage to wishlist array
-  var wishlistItems = JSON.parse(localStorage.getItem("wishlist")) || [];
-  if (!wishlistItems.includes(game)) {
-    wishlistItems.push(game);
-    localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
-    renderWishlist();
-  }
-}
 
-// Have the button only show up when the search is run
-var searchEl = document.getElementById("SearchBtn");
-
-// Add event listener to Search button element
-searchEl.addEventListener("click", searchBar);
-saveEl.addEventListener("click", function (event) {
+saveEl.addEventListener("click", (event) => {
   event.preventDefault();
-
-  var wishlistText = event.target.getAttribute("data-game");
-  console.log(wishlistText);
+  const wishlistText = event.target.getAttribute("data-game");
   storeWishlist(wishlistText);
 });
+
+// Initial page load
+init();
+pageLoad();
