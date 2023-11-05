@@ -1,13 +1,49 @@
+
 const rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
 const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
-const wishlistArray = [];
+var wishlistArray = [];
 const modalWindow = document.getElementById("modalWindow");
 const saveEl = document.getElementById("saveBtn");
 const input = document.getElementById("query");
 const wishlist = document.getElementById("wishlist-id");
 const wishlistCount = document.getElementById("wishlist-count");
 
+const gamesListContainer = document.getElementById("gamesList");
 
+
+let page = 1; // Start with page 1
+const resultsPerPage = 100; // Number of results per page
+
+// Function to fetch and display the list of games
+function fetchGamesList() {
+  const gamesListURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${resultsPerPage}`;
+  
+  const datalist = document.getElementById("games-datalist");
+
+  fetch(gamesListURL)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.results && data.results.length > 0) {
+        const gameNames = data.results.map((game) => game.name);
+
+        // Clear the existing options
+        datalist.innerHTML = '';
+
+        // Populate the datalist with game names
+        gameNames.forEach((gameName) => {
+          const option = document.createElement("option");
+          option.value = gameName;
+          datalist.appendChild(option);
+        });
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching games list: ", error);
+    });
+}
+
+// Call the function to fetch and display the games list
+fetchGamesList();
 
 
 AOS.init();
@@ -221,7 +257,7 @@ function searchGame(inputVal) {
         return res.json();
       })
       .then(function (ratingData) {
-        console.log(ratingData);
+        // console.log(ratingData);
 
         var game1 = data.name;
         var game2 = ratingData.results[1].name;
@@ -387,11 +423,14 @@ function pageLoad() {
       fetch(pageLoadGenre)
         .then((res) => res.json())
         .then((pageLoadRatingData) => {
-          // Rest of the code to display additional game details and charts...
-          console.log(pageLoadRatingData);
+         
+          
 
           function populateCarouselWithImages() {
             var carousel = document.querySelector("#myCarousel .carousel-inner");
+          
+            // Clear the existing carousel items
+            carousel.innerHTML = '';
           
             // Extract background images and game names from the first 20 results
             var gameResults = pageLoadRatingData.results.slice(0, 20);
@@ -417,7 +456,7 @@ function pageLoad() {
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-          console.log(gameData);
+          
                 // Create a column for each image
                 var col = document.createElement("div");
                 col.className = "col";
@@ -449,8 +488,8 @@ function pageLoad() {
                 // Add a click event listener to the image
                 image.addEventListener("click", function () {
                   // Set the game name as the value of the search input
-                  var searchInput = document.getElementById("query");
-                  searchInput.value = gameName;
+                  var input = document.getElementById("query");
+                  input.value = gameName;
           
                   // Trigger the search by clicking the search button
                   var searchButton = document.getElementById("SearchBtn");
@@ -477,6 +516,7 @@ function pageLoad() {
           }
           
           populateCarouselWithImages();
+          
           
           var game1 = pageLoadData.name;
           var game2 = pageLoadRatingData.results[1].name;
