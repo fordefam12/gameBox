@@ -1,12 +1,24 @@
 const rawgAPIKey = "afe2446d033e4b5197325726cd2f5fb8";
 const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
-console.log(fullGameList);
 var wishlistArray = [];
 const modalWindow = document.getElementById("modalWindow");
 const saveEl = document.getElementById("saveBtn");
 const input = document.getElementById("query");
 const wishlist = document.getElementById("wishlist-id");
 const wishlistCount = document.getElementById("wishlist-count");
+const searchButton = document.getElementById("searchButton");
+const gameNameInput = document.getElementById("gameNameInput");
+const gamePKInput = document.getElementById("gamePKInput");
+
+// searchButton.addEventListener("click", () => {
+//   const gameName = gameNameInput.value;
+//   // Use the RAWG API to search for the game based on gameName
+//   // Fetch the results and extract the PK of the selected game
+
+//   // Example: Once you have the PK, populate the gamePK input field
+//   const gamePK = 12345; // Replace with the actual PK you obtained
+//   gamePKInput.value = gamePK;
+// });
 
 const gamesListContainer = document.getElementById("gamesList");
 
@@ -213,75 +225,108 @@ function storeWishlist(game) {
   }
 }
 
-function fetchRelatedGames(gameName) {
-  const relatedGamesURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&search=${gameName}&page_size=20`; 
+// Function to fetch games in the same series
+function fetchSeriesGames(gamePk, page = 1, page_size = 10) {
+  const seriesGamesURL = `https://api.rawg.io/api/games/${gamePk}/game-series?page=${page}&page_size=${page_size}&key=${rawgAPIKey}`;
 
-  fetch(relatedGamesURL)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(
-          `Network response was not ok (${response.status}): ${response.statusText}`
-        );
-      }
-      return response.json();
-    })
+  fetch(seriesGamesURL)
+    .then((response) => response.json())
     .then((data) => {
+      // Check if there are series-related games
       if (data.results && data.results.length > 0) {
-        // You can now display the related games in your HTML.
-        displayGameSeries(data.results);
+        displayRelatedGames(data.results);
       } else {
-        // Handle the case where there are no related games.
-        console.error("No related games found.");
+        // Handle the case where there are no related series games.
+        console.error("No related series games found.");
       }
     })
     .catch((error) => {
-      console.error("Error fetching related games:", error);
+      console.error("Error fetching series-related games:", error);
     });
 }
+// Define a sample pageLoadData object
+const pageLoadData = {
+  id: 12345, // Replace with the actual game ID
+  game_series_count: 5, // Replace with the actual game series count
+};
+
+// Now you can use pageLoadData in your code
+const gameSeriesCount = pageLoadData.game_series_count;
+const gamePk = pageLoadData.id;
 
 
-function displayGameSeries(gameSeries) {
+if (gameSeriesCount > 0) {
+  // Fetch related games in the same series
+  const seriesGamesURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&series_pk=${gamePk}&page_size=${gameSeriesCount}`;
+
+  fetch(seriesGamesURL)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.results && data.results.length > 0) {
+        // Display the list of related games in your UI
+        displayRelatedGames(data.results);
+      } else {
+        console.error("No related games found in the series.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching related games in the series:", error);
+    });
+}
+// Function to display series-related games
+// Function to display series-related games in columns of 3
+// Function to display series-related games in columns of 3
+function displayRelatedGames(relatedGames) {
+  // Clear any existing content
   const relatedGamesContainer = document.getElementById("relatedGames");
-
-  // Clear the existing related games
   relatedGamesContainer.innerHTML = "";
 
-  if (gameSeries.length === 0) {
-    // If there is no game series information, display a message or handle as needed
-    const noSeriesMessage = document.createElement("p");
-    noSeriesMessage.textContent = "No game series information available.";
-    relatedGamesContainer.appendChild(noSeriesMessage);
-  } else {
-    // Create a row div for the game series
-    const rowDiv = document.createElement("div");
-    rowDiv.classList.add("row");
+  // Create a wrapper div to hold the game items
+  const wrapperDiv = document.createElement("div");
+  wrapperDiv.classList.add("game-wrapper");
 
-    // Create a card for each game in the series
-    gameSeries.forEach((game) => {
-      const gameCard = document.createElement("div");
-      gameCard.classList.add("col", "related-game-card");
+  relatedGames.forEach((game, index) => {
+    const gameDiv = document.createElement("div");
+    gameDiv.classList.add("related-game");
 
-      // Create an image element for the game
-      const gameImage = document.createElement("img");
-      gameImage.src = game.background_image;
-      gameImage.alt = game.name;
+    // Create an image element for the game
+    const gameImage = document.createElement("img");
+    gameImage.src = game.background_image; // Set the image source based on your data
 
-      // Create a title element for the game
-      const gameTitle = document.createElement("h2");
-      gameTitle.textContent = game.name;
+    // Create a paragraph element for the game name
+    const gameName = document.createElement("p");
+    gameName.textContent = game.name;
 
-      // Append the image and title to the card
-      gameCard.appendChild(gameImage);
-      gameCard.appendChild(gameTitle);
-
-      // Append the card to the row
-      rowDiv.appendChild(gameCard);
+    // Add a click event listener to the image element
+    gameImage.addEventListener("click", () => {
+      // Trigger the searchGame function when the image is clicked
+      searchGame(game.name.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase());
     });
 
-    // Append the row to the related games container
-    relatedGamesContainer.appendChild(rowDiv);
-  }
+    // Append the image and name to the gameDiv
+    gameDiv.appendChild(gameImage);
+    gameDiv.appendChild(gameName);
+
+    // Append the gameDiv to the wrapperDiv
+    wrapperDiv.appendChild(gameDiv);
+
+    // Add the "clear" class to start a new row after every three games
+    if ((index + 1) % 3 === 0) {
+      wrapperDiv.classList.add("clear");
+    }
+  });
+
+  // Append the wrapperDiv to the relatedGamesContainer
+  relatedGamesContainer.appendChild(wrapperDiv);
 }
+
+
+
+// Example usage: Fetch and display series-related games
+// const gamePk = "YOUR_GAME_PK"; // Replace with the specific game's PK
+const seriesPage = 1;
+const seriesPageSize = 10;
+fetchSeriesGames(gamePk, seriesPage, seriesPageSize);
 
 
 
@@ -472,7 +517,7 @@ function searchGame(inputVal) {
           });
         });
         // Fetch related games
-      fetchRelatedGames(data.id);
+      fetchSeriesGames(data.id);
 
       renderWishlist();
     })
@@ -488,6 +533,13 @@ function pageLoad() {
   fetch(pageLoadURL)
     .then((res) => res.json())
     .then((pageLoadData) => {
+      console.log(pageLoadData);
+      if (pageLoadData.results && pageLoadData.results.length > 0) {
+        // Display the list of related games in your UI
+        displayRelatedGames(pageLoadData.results);
+      } else {
+        console.error("No related games found in the series.");
+      }
       const videoGameImageURLDynamic2 =
         pageLoadData.background_image_additional;
       document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
