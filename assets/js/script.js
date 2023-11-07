@@ -1,4 +1,4 @@
-const rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
+const rawgAPIKey = "afe2446d033e4b5197325726cd2f5fb8";
 const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
 console.log(fullGameList);
 var wishlistArray = [];
@@ -213,8 +213,8 @@ function storeWishlist(game) {
   }
 }
 
-function fetchRelatedGames(gameId) {
-  const relatedGamesURL = `https://api.rawg.io/api/games/${gameId}/suggested?key=${rawgAPIKey}`;
+function fetchRelatedGames(gameName) {
+  const relatedGamesURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&search=${gameName}&page_size=20`; 
 
   fetch(relatedGamesURL)
     .then((response) => {
@@ -228,7 +228,7 @@ function fetchRelatedGames(gameId) {
     .then((data) => {
       if (data.results && data.results.length > 0) {
         // You can now display the related games in your HTML.
-        displayRelatedGames(data.results);
+        displayGameSeries(data.results);
       } else {
         // Handle the case where there are no related games.
         console.error("No related games found.");
@@ -240,25 +240,50 @@ function fetchRelatedGames(gameId) {
 }
 
 
-
-function displayRelatedGames(relatedGames) {
+function displayGameSeries(gameSeries) {
   const relatedGamesContainer = document.getElementById("relatedGames");
 
   // Clear the existing related games
   relatedGamesContainer.innerHTML = "";
 
-  relatedGames.forEach((game) => {
-    const gameDiv = document.createElement("div");
-    gameDiv.classList.add("related-game");
+  if (gameSeries.length === 0) {
+    // If there is no game series information, display a message or handle as needed
+    const noSeriesMessage = document.createElement("p");
+    noSeriesMessage.textContent = "No game series information available.";
+    relatedGamesContainer.appendChild(noSeriesMessage);
+  } else {
+    // Create a row div for the game series
+    const rowDiv = document.createElement("div");
+    rowDiv.classList.add("row");
 
-    // You can customize how you want to display the related games, e.g., add an image, title, etc.
-    const gameTitle = document.createElement("h2");
-    gameTitle.textContent = game.name;
+    // Create a card for each game in the series
+    gameSeries.forEach((game) => {
+      const gameCard = document.createElement("div");
+      gameCard.classList.add("col", "related-game-card");
 
-    gameDiv.appendChild(gameTitle);
-    relatedGamesContainer.appendChild(gameDiv);
-  });
+      // Create an image element for the game
+      const gameImage = document.createElement("img");
+      gameImage.src = game.background_image;
+      gameImage.alt = game.name;
+
+      // Create a title element for the game
+      const gameTitle = document.createElement("h2");
+      gameTitle.textContent = game.name;
+
+      // Append the image and title to the card
+      gameCard.appendChild(gameImage);
+      gameCard.appendChild(gameTitle);
+
+      // Append the card to the row
+      rowDiv.appendChild(gameCard);
+    });
+
+    // Append the row to the related games container
+    relatedGamesContainer.appendChild(rowDiv);
+  }
 }
+
+
 
 
 // Function to search for a game
@@ -446,13 +471,14 @@ function searchGame(inputVal) {
             },
           });
         });
-        fetchRelatedGames(data.id); // Fetch related games
+        // Fetch related games
+      fetchRelatedGames(data.id);
 
-        renderWishlist();
-      })
-      .catch((error) => {
-        console.error("Error fetching game details: ", error);
-      });
+      renderWishlist();
+    })
+    .catch((error) => {
+      console.error("Error fetching game details: ", error);
+    });
 }
 
 // Function to load the page
