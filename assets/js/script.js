@@ -435,8 +435,9 @@ function pageLoad() {
             // Extract background images and game names from the first 20 results
             var gameResults = pageLoadRatingData.results.slice(0, 20);
           
-            // Group the game results into chunks of 4
-            var chunkSize = 5;
+            // Determine the chunk size based on screen width
+            var chunkSize = window.innerWidth < 768 ? 1 : 5; // Change 768 to your desired breakpoint
+          
             for (var i = 0; i < gameResults.length; i += chunkSize) {
               var chunk = gameResults.slice(i, i + chunkSize);
           
@@ -448,33 +449,27 @@ function pageLoad() {
                 item.classList.add("active");
               }
           
-              // Create a row for the images
               var row = document.createElement("div");
               row.className = "row";
           
-              // Loop through the chunk of game results
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
           
-                // Create a column for each image
                 var col = document.createElement("div");
                 col.className = "col";
           
-                // Create a container to set a fixed size
                 var imageContainer = document.createElement("div");
-                imageContainer.style.width = "300px"; // Set the desired width
-                imageContainer.style.height = "200px"; // Set the desired height
+                imageContainer.style.width = "300px";
+                imageContainer.style.height = "200px";
                 imageContainer.style.overflow = "hidden";
-                imageContainer.style.position = "relative"; // To position text inside
+                imageContainer.style.position = "relative";
           
-                // Create an image element
                 var image = document.createElement("img");
                 image.src = gameImageURL;
-                image.style.width = "100%"; // Make the image fill the container
+                image.style.width = "100%";
                 image.style.height = "100%";
           
-                // Create a text element for the game name
                 var gameNameText = document.createElement("p");
                 gameNameText.textContent = gameName;
                 gameNameText.style.position = "absolute";
@@ -485,37 +480,28 @@ function pageLoad() {
                 gameNameText.style.color = "white";
                 gameNameText.style.padding = "5px";
           
-                // Add a click event listener to the image
                 image.addEventListener("click", function () {
-                  // Set the game name as the value of the search input
                   var input = document.getElementById("query");
                   input.value = gameName;
           
-                  // Trigger the search by clicking the search button
                   var searchButton = document.getElementById("SearchBtn");
                   searchButton.click();
                 });
           
-                // Add the image and game name to the container
                 imageContainer.appendChild(image);
                 imageContainer.appendChild(gameNameText);
           
-                // Add the container to the column
                 col.appendChild(imageContainer);
-          
-                // Add the column to the row
                 row.appendChild(col);
               });
           
-              // Add the row to the item
               item.appendChild(row);
-          
-              // Add the item to the carousel
               carousel.appendChild(item);
             }
           }
           
           populateCarouselWithImages();
+          
           
           
           var game1 = pageLoadData.name;
