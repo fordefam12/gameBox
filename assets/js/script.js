@@ -1,6 +1,6 @@
-
 const rawgAPIKey = "9291f496b0954cfd85fdd080b9cd538f";
 const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
+console.log(fullGameList);
 var wishlistArray = [];
 const modalWindow = document.getElementById("modalWindow");
 const saveEl = document.getElementById("saveBtn");
@@ -10,14 +10,13 @@ const wishlistCount = document.getElementById("wishlist-count");
 
 const gamesListContainer = document.getElementById("gamesList");
 
-
 let page = 1; // Start with page 1
 const resultsPerPage = 100; // Number of results per page
 
 // Function to fetch and display the list of games
 function fetchGamesList() {
   const gamesListURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${resultsPerPage}`;
-  
+
   const datalist = document.getElementById("games-datalist");
 
   fetch(gamesListURL)
@@ -27,7 +26,7 @@ function fetchGamesList() {
         const gameNames = data.results.map((game) => game.name);
 
         // Clear the existing options
-        datalist.innerHTML = '';
+        datalist.innerHTML = "";
 
         // Populate the datalist with game names
         gameNames.forEach((gameName) => {
@@ -44,7 +43,6 @@ function fetchGamesList() {
 
 // Call the function to fetch and display the games list
 fetchGamesList();
-
 
 AOS.init();
 
@@ -115,12 +113,18 @@ function renderWishlist() {
 
     removeButton.addEventListener("click", (event) => {
       const gameTitle = event.target.getAttribute("data-game");
-      const updatedWishlist = wishlistArray.filter((game) => game !== gameTitle);
+      const updatedWishlist = wishlistArray.filter(
+        (game) => game !== gameTitle
+      );
       localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
       renderWishlist();
     });
 
-    const addMouseOverAndOutEvents = (element, stylesOnMouseOver, stylesOnMouseOut) => {
+    const addMouseOverAndOutEvents = (
+      element,
+      stylesOnMouseOver,
+      stylesOnMouseOut
+    ) => {
       element.addEventListener("mouseover", () => {
         element.style.cssText = stylesOnMouseOver;
       });
@@ -130,7 +134,9 @@ function renderWishlist() {
       });
     };
 
-    addMouseOverAndOutEvents(removeButton, `
+    addMouseOverAndOutEvents(
+      removeButton,
+      `
       margin-left: 1%;
       background-color: hsl(348, 100%, 61%);
       border: none;
@@ -138,15 +144,19 @@ function renderWishlist() {
       cursor: pointer;
       display: flex;
       height: 25px;
-    `, `
+    `,
+      `
       margin-left: 1%;
       background-color: hsl(348, 100%, 61%);
       border: 1px solid rgba(255, 182, 182, 0.534);
       padding: 1%;
       height: 25px;
-    `);
+    `
+    );
 
-    addMouseOverAndOutEvents(li, `
+    addMouseOverAndOutEvents(
+      li,
+      `
       margin-right: 1%;
       margin-bottom: 4%;
       background-color: hsl(204, 86%, 53%);
@@ -157,7 +167,8 @@ function renderWishlist() {
       padding: 3%;
       display: flex;
       justify-content: space-between;
-    `, `
+    `,
+      `
       margin-right: 1%;
       margin-bottom: 4%;
       background-color: hsl(204, 86%, 53%);
@@ -168,7 +179,8 @@ function renderWishlist() {
       padding: 3%;
       display: flex;
       justify-content: space-between;
-    `);
+    `
+    );
 
     li.addEventListener("click", () => {
       const gameName = li.textContent;
@@ -201,14 +213,64 @@ function storeWishlist(game) {
   }
 }
 
+function fetchRelatedGames(gameId) {
+  const relatedGamesURL = `https://api.rawg.io/api/games/${gameId}/suggested?key=${rawgAPIKey}`;
+
+  fetch(relatedGamesURL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Network response was not ok (${response.status}): ${response.statusText}`
+        );
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.results && data.results.length > 0) {
+        // You can now display the related games in your HTML.
+        displayRelatedGames(data.results);
+      } else {
+        // Handle the case where there are no related games.
+        console.error("No related games found.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching related games:", error);
+    });
+}
+
+
+
+function displayRelatedGames(relatedGames) {
+  const relatedGamesContainer = document.getElementById("relatedGames");
+
+  // Clear the existing related games
+  relatedGamesContainer.innerHTML = "";
+
+  relatedGames.forEach((game) => {
+    const gameDiv = document.createElement("div");
+    gameDiv.classList.add("related-game");
+
+    // You can customize how you want to display the related games, e.g., add an image, title, etc.
+    const gameTitle = document.createElement("h2");
+    gameTitle.textContent = game.name;
+
+    gameDiv.appendChild(gameTitle);
+    relatedGamesContainer.appendChild(gameDiv);
+  });
+}
+
+
 // Function to search for a game
 function searchGame(inputVal) {
-  const specificGameURL = `https://api.rawg.io/api/games/${inputVal.replace(/\s+/g, "-").toLowerCase()}?key=${rawgAPIKey}`;
+  const specificGameURL = `https://api.rawg.io/api/games/${inputVal
+    .replace(/\s+/g, "-")
+    .toLowerCase()}?key=${rawgAPIKey}`;
 
   fetch(specificGameURL)
     .then((res) => {
       if (res.status === 404) {
-        showModal();
+        showAlertModal("Game not found.");
         return null;
       }
       return res.json();
@@ -232,7 +294,9 @@ function searchGame(inputVal) {
       videoGameRating.textContent = data.esrb_rating.name || "";
 
       const videoGamePlatforms = document.querySelector("#vgPlatforms");
-      const platformsString = data.parent_platforms.map((platform) => platform.platform.name).join(", ");
+      const platformsString = data.parent_platforms
+        .map((platform) => platform.platform.name)
+        .join(", ");
       videoGamePlatforms.textContent = platformsString;
 
       clearPreviousGameImages();
@@ -253,138 +317,143 @@ function searchGame(inputVal) {
       const genreURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&genres=${genreString}`;
 
       fetch(genreURL)
-      .then(function (res) {
-        return res.json();
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (ratingData) {
+          // console.log(ratingData);
+
+          var game1 = data.name;
+          var game2 = ratingData.results[1].name;
+          var game3 = ratingData.results[2].name;
+          var game4 = ratingData.results[3].name;
+          var game5 = ratingData.results[4].name;
+
+          var gameRating1 = data.rating;
+          var gameRating2 = ratingData.results[0].rating;
+          var gameRating3 = ratingData.results[1].rating;
+          var gameRating4 = ratingData.results[2].rating;
+          var gameRating5 = ratingData.results[3].rating;
+
+          const ctx = document.getElementById("ratingChart");
+          // destroy chart code
+          var chartStatus = Chart.getChart("ratingChart"); // <canvas> id
+          if (chartStatus != undefined) {
+            chartStatus.destroy();
+          }
+
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: [game1, game2, game3, game4, game5],
+              datasets: [
+                {
+                  label: "Rating",
+
+                  data: [
+                    gameRating1,
+                    gameRating2,
+                    gameRating3,
+                    gameRating4,
+                    gameRating5,
+                  ],
+                  borderWidth: 2,
+                  backgroundColor: "rgb(250, 6, 6)",
+                },
+              ],
+            },
+            options: {
+              animation: {
+                borderWidth: {
+                  duration: 1000,
+                  easing: "linear",
+                  to: 1,
+                  from: 5,
+                  loop: true,
+                },
+              },
+              animations: {
+                backgroundColor: {
+                  type: "color",
+                  duration: 1000,
+                  easing: "linear",
+                  to: "blue",
+                  from: "red",
+                  loop: true,
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            },
+          });
+
+          const ctx1 = document.getElementById("popChart");
+
+          // destroy chart code
+          var chartStatus = Chart.getChart("popChart"); // <canvas> id
+          if (chartStatus != undefined) {
+            chartStatus.destroy();
+          }
+
+          new Chart(ctx1, {
+            type: "line",
+            data: {
+              labels: [game1, game2, game3, game4, game5],
+              datasets: [
+                {
+                  label: "Rating",
+                  data: [
+                    gameRating1,
+                    gameRating2,
+                    gameRating3,
+                    gameRating4,
+                    gameRating5,
+                  ],
+                  borderWidth: 5,
+                  backgroundColor: "rgb(250, 6, 6)",
+                },
+              ],
+            },
+            options: {
+              animation: {
+                tension: {
+                  duration: 1000,
+                  easing: "linear",
+                  from: 1,
+                  to: 2,
+                  loop: true,
+                },
+                backgroundColor: {
+                  type: "color",
+                  duration: 1000,
+                  easing: "linear",
+                  to: "blue",
+                  from: "red",
+                  loop: true,
+                },
+              },
+
+              scales: {
+                y: {
+                  // defining min and max so hiding the dataset does not change scale range
+                  min: 0,
+                  max: 5,
+                },
+              },
+            },
+          });
+        });
+        fetchRelatedGames(data.id); // Fetch related games
+
+        renderWishlist();
       })
-      .then(function (ratingData) {
-        // console.log(ratingData);
-
-        var game1 = data.name;
-        var game2 = ratingData.results[1].name;
-        var game3 = ratingData.results[2].name;
-        var game4 = ratingData.results[3].name;
-        var game5 = ratingData.results[4].name;
-
-        var gameRating1 = data.rating;
-        var gameRating2 = ratingData.results[0].rating;
-        var gameRating3 = ratingData.results[1].rating;
-        var gameRating4 = ratingData.results[2].rating;
-        var gameRating5 = ratingData.results[3].rating;
-
-        const ctx = document.getElementById("ratingChart");
-        // destroy chart code
-        var chartStatus = Chart.getChart("ratingChart"); // <canvas> id
-        if (chartStatus != undefined) {
-          chartStatus.destroy();
-        }
-
-        new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: [game1, game2, game3, game4, game5],
-            datasets: [
-              {
-                label: "Rating",
-
-                data: [
-                  gameRating1,
-                  gameRating2,
-                  gameRating3,
-                  gameRating4,
-                  gameRating5,
-                ],
-                borderWidth: 2,
-                backgroundColor: "rgb(250, 6, 6)",
-              },
-            ],
-          },
-          options: {
-            animation: {
-              borderWidth: {
-                duration: 1000,
-                easing: "linear",
-                to: 1,
-                from: 5,
-                loop: true,
-              },
-            },
-            animations: {
-              backgroundColor: {
-                type: "color",
-                duration: 1000,
-                easing: "linear",
-                to: "blue",
-                from: "red",
-                loop: true,
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-            },
-          },
-        });
-
-        const ctx1 = document.getElementById("popChart");
-
-        // destroy chart code
-        var chartStatus = Chart.getChart("popChart"); // <canvas> id
-        if (chartStatus != undefined) {
-          chartStatus.destroy();
-        }
-
-        new Chart(ctx1, {
-          type: "line",
-          data: {
-            labels: [game1, game2, game3, game4, game5],
-            datasets: [
-              {
-                label: "Rating",
-                data: [
-                  gameRating1,
-                  gameRating2,
-                  gameRating3,
-                  gameRating4,
-                  gameRating5,
-                ],
-                borderWidth: 5,
-                backgroundColor: "rgb(250, 6, 6)",
-              },
-            ],
-          },
-          options: {
-            animation: {
-              tension: {
-                duration: 1000,
-                easing: "linear",
-                from: 1,
-                to: 2,
-                loop: true,
-              },
-              backgroundColor: {
-                type: "color",
-                duration: 1000,
-                easing: "linear",
-                to: "blue",
-                from: "red",
-                loop: true,
-              },
-            },
-
-            scales: {
-              y: {
-                // defining min and max so hiding the dataset does not change scale range
-                min: 0,
-                max: 5,
-              },
-            },
-          },
-        });
+      .catch((error) => {
+        console.error("Error fetching game details: ", error);
       });
-    });
 }
-
 
 // Function to load the page
 function pageLoad() {
@@ -393,7 +462,8 @@ function pageLoad() {
   fetch(pageLoadURL)
     .then((res) => res.json())
     .then((pageLoadData) => {
-      const videoGameImageURLDynamic2 = pageLoadData.background_image_additional;
+      const videoGameImageURLDynamic2 =
+        pageLoadData.background_image_additional;
       document.body.style.backgroundImage = `url('${videoGameImageURLDynamic2}')`;
       document.body.style.backgroundRepeat = "no-repeat";
       document.body.style.backgroundSize = "cover";
@@ -414,62 +484,65 @@ function pageLoad() {
       videoGameDesc.textContent = pageLoadData.description_raw;
       videoGameTitle.textContent = pageLoadData.name;
       videoGameRating.textContent = pageLoadData.esrb_rating.name || "";
-      const staticPlatformsString = pageLoadData.parent_platforms.map((platform) => platform.platform.name).join(", ");
+      const staticPlatformsString = pageLoadData.parent_platforms
+        .map((platform) => platform.platform.name)
+        .join(", ");
       videoGamePlatforms.textContent = staticPlatformsString;
 
-      const genreStringOnLoad = pageLoadData.genres.map((genre) => genre.id).join(",");
+      const genreStringOnLoad = pageLoadData.genres
+        .map((genre) => genre.id)
+        .join(",");
       const pageLoadGenre = `https://api.rawg.io/api/games?key=${rawgAPIKey}&genres=${genreStringOnLoad}`;
 
       fetch(pageLoadGenre)
         .then((res) => res.json())
         .then((pageLoadRatingData) => {
-         
-          
-
           function populateCarouselWithImages() {
-            var carousel = document.querySelector("#myCarousel .carousel-inner");
-          
+            var carousel = document.querySelector(
+              "#myCarousel .carousel-inner"
+            );
+
             // Clear the existing carousel items
-            carousel.innerHTML = '';
-          
+            carousel.innerHTML = "";
+
             // Extract background images and game names from the first 20 results
             var gameResults = pageLoadRatingData.results.slice(0, 20);
-          
+
             // Determine the chunk size based on screen width
             var chunkSize = window.innerWidth < 768 ? 1 : 5; // Change 768 to your desired breakpoint
-          
+
             for (var i = 0; i < gameResults.length; i += chunkSize) {
               var chunk = gameResults.slice(i, i + chunkSize);
-          
+
               var item = document.createElement("div");
               item.className = "carousel-item";
-          
+
               // Add the "active" class to the first item
               if (i === 0) {
                 item.classList.add("active");
               }
-          
+
               var row = document.createElement("div");
               row.className = "row";
-          
+
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-          
+
                 var col = document.createElement("div");
                 col.className = "col";
-          
+
                 var imageContainer = document.createElement("div");
                 imageContainer.style.width = "300px";
                 imageContainer.style.height = "200px";
                 imageContainer.style.overflow = "hidden";
                 imageContainer.style.position = "relative";
-          
+
                 var image = document.createElement("img");
                 image.src = gameImageURL;
                 image.style.width = "100%";
                 image.style.height = "100%";
-          
+
                 var gameNameText = document.createElement("p");
                 gameNameText.textContent = gameName;
                 gameNameText.style.position = "absolute";
@@ -479,31 +552,29 @@ function pageLoad() {
                 gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
                 gameNameText.style.color = "white";
                 gameNameText.style.padding = "5px";
-          
+
                 image.addEventListener("click", function () {
                   var input = document.getElementById("query");
                   input.value = gameName;
-          
+
                   var searchButton = document.getElementById("SearchBtn");
                   searchButton.click();
                 });
-          
+
                 imageContainer.appendChild(image);
                 imageContainer.appendChild(gameNameText);
-          
+
                 col.appendChild(imageContainer);
                 row.appendChild(col);
               });
-          
+
               item.appendChild(row);
               carousel.appendChild(item);
             }
           }
-          
+
           populateCarouselWithImages();
-          
-          
-          
+
           var game1 = pageLoadData.name;
           var game2 = pageLoadRatingData.results[1].name;
           var game3 = pageLoadRatingData.results[2].name;
@@ -621,11 +692,12 @@ function pageLoad() {
               },
             },
           });
-        
         });
-        renderWishlist();
+      renderWishlist();
     });
 }
+
+
 
 // Function to handle the click event for the Search button
 function handleSearchButtonClick(event) {
@@ -636,7 +708,9 @@ function handleSearchButtonClick(event) {
 }
 
 // Event listeners
-document.getElementById("SearchBtn").addEventListener("click", handleSearchButtonClick);
+document
+  .getElementById("SearchBtn")
+  .addEventListener("click", handleSearchButtonClick);
 
 // function init() {
 //   // Get stored wishlist items from localStorage
@@ -650,7 +724,6 @@ document.getElementById("SearchBtn").addEventListener("click", handleSearchButto
 //   // This is a helper function that will render the wishlist to the DOM
 //   renderWishlist();
 // }
-
 
 saveEl.addEventListener("click", (event) => {
   event.preventDefault();
