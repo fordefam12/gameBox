@@ -1,29 +1,17 @@
 const rawgAPIKey = "afe2446d033e4b5197325726cd2f5fb8";
-const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
-var wishlistArray = [];
-const modalWindow = document.getElementById("modalWindow");
-const saveEl = document.getElementById("saveBtn");
-const input = document.getElementById("query");
-const wishlist = document.getElementById("wishlist-id");
-const wishlistCount = document.getElementById("wishlist-count");
-const searchButton = document.getElementById("searchButton");
-const gameNameInput = document.getElementById("gameNameInput");
-const gamePKInput = document.getElementById("gamePKInput");
-
-// searchButton.addEventListener("click", () => {
-//   const gameName = gameNameInput.value;
-//   // Use the RAWG API to search for the game based on gameName
-//   // Fetch the results and extract the PK of the selected game
-
-//   // Example: Once you have the PK, populate the gamePK input field
-//   const gamePK = 12345; // Replace with the actual PK you obtained
-//   gamePKInput.value = gamePK;
-// });
-
-const gamesListContainer = document.getElementById("gamesList");
-
+const apiKeyURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
+const resultsPerPage = 100;
 let page = 1; // Start with page 1
-const resultsPerPage = 100; // Number of results per page
+
+const modalWindow = document.querySelector("#modalWindow");
+const saveEl = document.querySelector("#saveBtn");
+const input = document.querySelector("#query");
+const wishlist = document.querySelector("#wishlist-id");
+const wishlistCount = document.querySelector("#wishlist-count");
+const searchButton = document.querySelector("#searchButton");
+const gameNameInput = document.querySelector("#gameNameInput");
+const gamePKInput = document.querySelector("#gamePKInput");
+const gamesListContainer = document.getElementById("gamesList");
 
 // Function to fetch and display the list of games
 function fetchGamesList() {
@@ -254,7 +242,6 @@ const pageLoadData = {
 const gameSeriesCount = pageLoadData.game_series_count;
 const gamePk = pageLoadData.id;
 
-
 if (gameSeriesCount > 0) {
   // Fetch related games in the same series
   const seriesGamesURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&series_pk=${gamePk}&page_size=${gameSeriesCount}`;
@@ -273,9 +260,6 @@ if (gameSeriesCount > 0) {
       console.error("Error fetching related games in the series:", error);
     });
 }
-// Function to display series-related games
-// Function to display series-related games in columns of 3
-// Function to display series-related games in columns of 3
 function displayRelatedGames(relatedGames) {
   // Clear any existing content
   const relatedGamesContainer = document.getElementById("relatedGames");
@@ -300,7 +284,9 @@ function displayRelatedGames(relatedGames) {
     // Add a click event listener to the image element
     gameImage.addEventListener("click", () => {
       // Trigger the searchGame function when the image is clicked
-      searchGame(game.name.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase());
+      searchGame(
+        game.name.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase()
+      );
     });
 
     // Append the image and name to the gameDiv
@@ -319,19 +305,10 @@ function displayRelatedGames(relatedGames) {
   // Append the wrapperDiv to the relatedGamesContainer
   relatedGamesContainer.appendChild(wrapperDiv);
 }
-
-
-
-// Example usage: Fetch and display series-related games
-// const gamePk = "YOUR_GAME_PK"; // Replace with the specific game's PK
 const seriesPage = 1;
 const seriesPageSize = 10;
 fetchSeriesGames(gamePk, seriesPage, seriesPageSize);
 
-
-
-
-// Function to search for a game
 function searchGame(inputVal) {
   const specificGameURL = `https://api.rawg.io/api/games/${inputVal
     .replace(/\s+/g, "-")
@@ -516,7 +493,7 @@ function searchGame(inputVal) {
             },
           });
         });
-        // Fetch related games
+      // Fetch related games
       fetchSeriesGames(data.id);
 
       renderWishlist();
@@ -775,8 +752,6 @@ function pageLoad() {
     });
 }
 
-
-
 // Function to handle the click event for the Search button
 function handleSearchButtonClick(event) {
   event.preventDefault();
@@ -789,19 +764,6 @@ function handleSearchButtonClick(event) {
 document
   .getElementById("SearchBtn")
   .addEventListener("click", handleSearchButtonClick);
-
-// function init() {
-//   // Get stored wishlist items from localStorage
-//   var wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
-
-//   // If wishlist was retrieved from localStorage, update the wishlist array to it
-//   if (wishlistItems !== null) {
-//     wishlistArray = wishlistItems;
-//   }
-
-//   // This is a helper function that will render the wishlist to the DOM
-//   renderWishlist();
-// }
 
 saveEl.addEventListener("click", (event) => {
   event.preventDefault();
