@@ -124,10 +124,11 @@ i:hover {
 }
 
 .related-game {
-  width: 30%; /* Adjust the width to your preference for columns of three */
+  width: 31%; /* Adjust the width to your preference for columns of three */
+  
   margin: 1%; /* Adjust the margin to create space between games */
   text-align: center; /* Center the game content */
-  padding: 10px;
+  padding: 5px;
   box-sizing: border-box;
   display: flex; /* Add this to center the content vertically */
   flex-direction: column; /* Add this to center the content vertically */
@@ -136,6 +137,7 @@ i:hover {
 
 .related-game img {
   max-width: 100%;
+  height: 31%;
   max-height: 100px; /* Adjust the max height to your preference */
   display: block;
   margin: 0 auto;
