@@ -555,82 +555,68 @@ function pageLoad() {
         .then((res) => res.json())
         .then((pageLoadRatingData) => {
           function populateCarouselWithImages() {
-            var carousel = document.querySelector(
-              "#myCarousel .carousel-inner"
-            );
-
+            var carousel = document.querySelector("#myCarousel .carousel-inner");
+          
             // Clear the existing carousel items
             carousel.innerHTML = "";
-
+          
             // Extract background images and game names from the first 20 results
             var gameResults = pageLoadRatingData.results.slice(0, 20);
-
+          
             // Determine the chunk size based on screen width
             var chunkSize = window.innerWidth < 768 ? 1 : 5; // Change 768 to your desired breakpoint
-
+          
             for (var i = 0; i < gameResults.length; i += chunkSize) {
               var chunk = gameResults.slice(i, i + chunkSize);
-
+          
               var item = document.createElement("div");
               item.className = "carousel-item";
-
+          
               // Add the "active" class to the first item
               if (i === 0) {
                 item.classList.add("active");
               }
-
-              var row = document.createElement("div");
-              row.className = "row";
-
+          
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-
+          
+                var row = document.createElement("div");
+                row.className = "row";
+          
                 var col = document.createElement("div");
                 col.className = "col";
-
+          
                 var imageContainer = document.createElement("div");
-                imageContainer.style.width = "300px";
+                imageContainer.className = "d-flex justify-content-center align-items-center";
                 imageContainer.style.height = "200px";
-                imageContainer.style.overflow = "hidden";
-                imageContainer.style.position = "relative";
-
+          
                 var image = document.createElement("img");
                 image.src = gameImageURL;
-                image.style.width = "100%";
-                image.style.height = "100%";
-
+                image.style.maxWidth = "100%";
+                image.style.maxHeight = "100%";
+                image.style.objectFit = "cover";
+          
                 var gameNameText = document.createElement("p");
                 gameNameText.textContent = gameName;
-                gameNameText.style.position = "absolute";
-                gameNameText.style.bottom = "0";
-                gameNameText.style.left = "0";
-                gameNameText.style.right = "0";
-                gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
+                gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
                 gameNameText.style.color = "white";
                 gameNameText.style.padding = "5px";
-
-                image.addEventListener("click", function () {
-                  var input = document.getElementById("query");
-                  input.value = gameName;
-
-                  var searchButton = document.getElementById("SearchBtn");
-                  searchButton.click();
-                });
-
+                gameNameText.style.textAlign = "center";
+          
                 imageContainer.appendChild(image);
-                imageContainer.appendChild(gameNameText);
-
                 col.appendChild(imageContainer);
+                col.appendChild(gameNameText);
                 row.appendChild(col);
+                item.appendChild(row);
               });
-
-              item.appendChild(row);
+          
               carousel.appendChild(item);
             }
           }
-
+          
           populateCarouselWithImages();
+          
 
           var game1 = pageLoadData.name;
           var game2 = pageLoadRatingData.results[1].name;
