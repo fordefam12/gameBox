@@ -107,9 +107,13 @@
       </div>
     </div>
     <div class="modalcontent" id="alertModal">
-        <p id="alertMessage">This is an alert message.</p>
-        <span id="xbtn" onclick="hideAlertModal()">&#10006;</span>
+      <span id="xbtn" class="has-background-danger" onclick="hideAlertModal()"><span class="close-icon is-danger">&#10006;</span></span>
+      <p id="alertMessage">This is an alert message.</p>
+      <div class="alert-window">
+        
       </div>
+    </div>
+    
     <main>
       <section class="columns">
         <section
@@ -209,10 +213,10 @@
       id="searchInput"
       type="text"
       placeholder="Search Games..."
-      oninput="filterGames()" class="notification has-background-info is-flex is-justify-content-center"
+      oninput="filterGames()" class="notification has-background-black is-flex is-justify-content-center"
     />
 
-    <ul id="gameList"></ul>
+    <ul id="gameList" class="has-background-grey "></ul>
             </div>
           </div>
         </section>
