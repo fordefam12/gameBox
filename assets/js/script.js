@@ -224,7 +224,7 @@ function storeWishlist(game) {
 }
 
 // Function to fetch games in the same series
-function fetchSeriesGames(gamePk, page = 1, page_size = 10) {
+function fetchSeriesGames(gamePk, page = 1, page_size = 30) {
   const seriesGamesURL = `https://api.rawg.io/api/games/${gamePk}/game-series?page=${page}&page_size=${page_size}&key=${rawgAPIKey}`;
 
   fetch(seriesGamesURL)
@@ -244,7 +244,7 @@ function fetchSeriesGames(gamePk, page = 1, page_size = 10) {
 // Define a sample pageLoadData object
 const pageLoadData = {
   id: 12345, // Replace with the actual game ID
-  game_series_count: 5, // Replace with the actual game series count
+  game_series_count: 30, // Replace with the actual game series count
 };
 
 // Now you can use pageLoadData in your code
@@ -261,8 +261,10 @@ if (gameSeriesCount > 0) {
       if (data.results && data.results.length > 0) {
         // Display the list of related games in your UI
         displayRelatedGames(data.results);
+        console.log(data.results);
       } else {
         console.error("No related games found in the series.");
+        
       }
     })
     .catch((error) => {
@@ -294,8 +296,9 @@ function displayRelatedGames(relatedGames) {
     gameImage.addEventListener("click", () => {
       // Trigger the searchGame function when the image is clicked
       searchGame(
-        game.name.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase()
+        game.slug
       );
+      console.log(game.slug);
     });
 
     // Append the image and name to the gameDiv
@@ -348,6 +351,13 @@ function searchGame(inputVal) {
 
       const videoGameRating = document.querySelector("#vgRating");
       videoGameRating.textContent = data.esrb_rating.name || "";
+// Check if 'data' is defined
+if (data && data.name) {
+  videoGameTitle.textContent = data.name;
+  // Rest of the code that accesses 'data' properties
+} else {
+  console.error("Game data is undefined or missing 'name' property.");
+}
 
       const videoGamePlatforms = document.querySelector("#vgPlatforms");
       const platformsString = data.parent_platforms
