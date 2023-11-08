@@ -201,10 +201,18 @@
                   </article>
                 </div>
               </article>
-              <div id="relatedGames" class="notification has-background-danger is-flex is-justify-content-center">
+              <div id="relatedGames" class="notification has-background-info is-flex is-justify-content-center">
                 <h1 class="title is-size-5 has-text-white">Related Games</h1>
                 <!-- Related games will be displayed here -->
               </div>
+              <input
+      id="searchInput"
+      type="text"
+      placeholder="Search Games..."
+      oninput="filterGames()" class="notification has-background-info is-flex is-justify-content-center"
+    />
+
+    <ul id="gameList"></ul>
             </div>
           </div>
         </section>

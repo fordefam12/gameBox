@@ -1,5 +1,5 @@
 const rawgAPIKey = "afe2446d033e4b5197325726cd2f5fb8";
-const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
+const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${resultsPerPage}`;
 var wishlistArray = [];
 const modalWindow = document.getElementById("modalWindow");
 const saveEl = document.getElementById("saveBtn");

@@ -11,13 +11,13 @@ const gameNameInput = document.getElementById("gameNameInput");
 const gamePKInput = document.getElementById("gamePKInput");
 
 const gamesListContainer = document.getElementById("gamesList");
-
-let page = 1; // Start with page 1
-const resultsPerPage = 100; // Number of results per page
+const page = 1; // Page number
+const pageSize = 100; // Number of games per page
+const apiUrl = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${pageSize}`;
 
 // Function to fetch and display the list of games
 function fetchGamesList() {
-  const gamesListURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${resultsPerPage}`;
+  const gamesListURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${pageSize}`;
 
   const datalist = document.getElementById("games-datalist");
 
@@ -41,8 +41,8 @@ function fetchGamesList() {
     .catch((error) => {
       console.error("Error fetching games list: ", error);
     });
+    console.log(gamesListURL);
 }
-
 // Call the function to fetch and display the games list
 fetchGamesList();
 
@@ -51,7 +51,6 @@ AOS.init();
 // Function to show the modal
 const alertModal = document.getElementById("alertModal"); // Assuming you have an alert modal element with this ID
 
-// Function to show the custom alert modal
 function showAlertModal(message) {
   const alertMessage = document.getElementById("alertMessage"); // Assuming you have an element to display the message in your alert modal
   alertMessage.textContent = message;
@@ -186,10 +185,19 @@ function renderWishlist() {
 
     li.addEventListener("click", () => {
       const gameName = li.textContent;
+      const gameSlug = gameName
+        .replace(/[^a-zA-Z 0-9]/g, '') // Remove non-letter and non-space characters
+        .replace(/ +/g, '-') // Replace consecutive spaces with a single hyphen
+        .toLowerCase();
+      
+      // Use the gameSlug in your code, for example:
       const videoGameContainerParent = document.getElementById("vgImages");
       videoGameContainerParent.innerHTML = "";
-      searchGame(gameName.replace(/\s+/g, "-").replace(/:/g, "").toLowerCase());
+      searchGame(gameSlug);
+      console.log(gameSlug);
     });
+    
+    
 
     li.appendChild(removeButton);
     wishlist.appendChild(li);
@@ -225,13 +233,12 @@ function fetchSeriesGames(gamePk, page = 1, page_size = 10) {
       // Check if there are series-related games
       if (data.results && data.results.length > 0) {
         displayRelatedGames(data.results);
-      } else {
-        // Handle the case where there are no related series games.
-        console.error("No related series games found.");
+        console.log(data);
       }
     })
     .catch((error) => {
       console.error("Error fetching series-related games:", error);
+      
     });
 }
 // Define a sample pageLoadData object
@@ -512,12 +519,9 @@ function pageLoad() {
   fetch(pageLoadURL)
     .then((res) => res.json())
     .then((pageLoadData) => {
-      console.log(pageLoadData);
       if (pageLoadData.results && pageLoadData.results.length > 0) {
         // Display the list of related games in your UI
         displayRelatedGames(pageLoadData.results);
-      } else {
-        console.error("No related games found in the series.");
       }
       const videoGameImageURLDynamic2 =
         pageLoadData.background_image_additional;
@@ -555,38 +559,40 @@ function pageLoad() {
         .then((res) => res.json())
         .then((pageLoadRatingData) => {
           function populateCarouselWithImages() {
-            var carousel = document.querySelector("#myCarousel .carousel-inner");
-          
+            var carousel = document.querySelector(
+              "#myCarousel .carousel-inner"
+            );
+
             // Clear the existing carousel items
             carousel.innerHTML = "";
-          
+
             // Extract background images and game names from the first 20 results
             var gameResults = pageLoadRatingData.results.slice(0, 20);
-          
+
             // Determine the chunk size based on screen width
             var chunkSize = window.innerWidth < 768 ? 1 : 5; // Change 768 to your desired breakpoint
-          
+
             for (var i = 0; i < gameResults.length; i += chunkSize) {
               var chunk = gameResults.slice(i, i + chunkSize);
-          
+
               var item = document.createElement("div");
               item.className = "carousel-item";
-          
+
               // Add the "active" class to the first item
               if (i === 0) {
                 item.classList.add("active");
               }
-          
+
               var row = document.createElement("div");
               row.className = "row";
-          
+
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-          
+
                 var col = document.createElement("div");
                 col.className = "col";
-          
+
                 var imageContainer = document.createElement("div");
                 imageContainer.style.width = "300px";
                 imageContainer.style.height = "200px";
@@ -616,20 +622,18 @@ function pageLoad() {
                   searchButton.click();
                 });
 
-          
                 imageContainer.appendChild(image);
                 col.appendChild(imageContainer);
                 col.appendChild(gameNameText);
                 row.appendChild(col);
               });
-          
+
               item.appendChild(row);
               carousel.appendChild(item);
             }
           }
-          
+
           populateCarouselWithImages();
-          
 
           var game1 = pageLoadData.name;
           var game2 = pageLoadRatingData.results[1].name;
@@ -760,6 +764,62 @@ function handleSearchButtonClick(event) {
   clearGameDetailsContainer();
   searchGame(inputVal);
 }
+
+// Define the array to store all game names
+const allGames = [];
+
+// Function to fetch the list of games and populate the array
+async function populateAllGamesArray() {
+  try {
+    const response = await fetch(fullGameList);
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // Extract game names from the data and populate the array
+      data.results.forEach((game) => {
+        allGames.push(game.name);
+      });
+
+      // Now, the allGames array contains all the game names
+    } else {
+      console.error('Failed to fetch game list');
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+
+// Call the function to populate the array
+populateAllGamesArray();
+
+// Get the search input and game list
+const searchInput = document.getElementById('searchInput');
+const gameList = document.getElementById('gameList');
+
+// Function to filter games based on input
+function filterGames() {
+  const searchTerm = searchInput.value.toLowerCase();
+  const filteredGames = allGames.filter((game) =>
+    game.toLowerCase().includes(searchTerm)
+  );
+
+  // Clear the game list
+  gameList.innerHTML = '';
+
+  // Display the filtered games
+  filteredGames.forEach((game) => {
+    const li = document.createElement('li');
+    li.textContent = game;
+    gameList.appendChild(li);
+  });
+}
+
+// Attach an event listener to the search input
+searchInput.addEventListener('input', filterGames);
+
+// Initialize the game list
+filterGames();
 
 // Event listeners
 document
