@@ -1,17 +1,19 @@
 const rawgAPIKey = "afe2446d033e4b5197325726cd2f5fb8";
-const apiKeyURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
-const resultsPerPage = 100;
-let page = 1; // Start with page 1
+const fullGameList = `https://api.rawg.io/api/games?key=${rawgAPIKey}`;
+var wishlistArray = [];
+const modalWindow = document.getElementById("modalWindow");
+const saveEl = document.getElementById("saveBtn");
+const input = document.getElementById("query");
+const wishlist = document.getElementById("wishlist-id");
+const wishlistCount = document.getElementById("wishlist-count");
+const searchButton = document.getElementById("searchButton");
+const gameNameInput = document.getElementById("gameNameInput");
+const gamePKInput = document.getElementById("gamePKInput");
 
-const modalWindow = document.querySelector("#modalWindow");
-const saveEl = document.querySelector("#saveBtn");
-const input = document.querySelector("#query");
-const wishlist = document.querySelector("#wishlist-id");
-const wishlistCount = document.querySelector("#wishlist-count");
-const searchButton = document.querySelector("#searchButton");
-const gameNameInput = document.querySelector("#gameNameInput");
-const gamePKInput = document.querySelector("#gamePKInput");
 const gamesListContainer = document.getElementById("gamesList");
+
+let page = 1; // Start with page 1
+const resultsPerPage = 100; // Number of results per page
 
 // Function to fetch and display the list of games
 function fetchGamesList() {
