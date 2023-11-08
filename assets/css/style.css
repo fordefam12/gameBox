@@ -129,6 +129,9 @@ i:hover {
   text-align: center; /* Center the game content */
   padding: 10px;
   box-sizing: border-box;
+  display: flex; /* Add this to center the content vertically */
+  flex-direction: column; /* Add this to center the content vertically */
+  align-items: center; /* Center the content horizontally */
 }
 
 .related-game img {
@@ -144,6 +147,7 @@ i:hover {
   display: block;
   clear: both;
 }
+
 
 
 
