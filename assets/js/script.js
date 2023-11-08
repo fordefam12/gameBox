@@ -577,40 +577,53 @@ function pageLoad() {
                 item.classList.add("active");
               }
           
+              var row = document.createElement("div");
+              row.className = "row";
+          
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-          
-                var row = document.createElement("div");
-                row.className = "row";
           
                 var col = document.createElement("div");
                 col.className = "col";
           
                 var imageContainer = document.createElement("div");
-                imageContainer.className = "d-flex justify-content-center align-items-center";
+                imageContainer.style.width = "300px";
                 imageContainer.style.height = "200px";
-          
+                imageContainer.style.overflow = "hidden";
+                imageContainer.style.position = "relative";
+
                 var image = document.createElement("img");
                 image.src = gameImageURL;
-                image.style.maxWidth = "100%";
-                image.style.maxHeight = "100%";
-                image.style.objectFit = "cover";
-          
+                image.style.width = "100%";
+                image.style.height = "100%";
+
                 var gameNameText = document.createElement("p");
                 gameNameText.textContent = gameName;
-                gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+                gameNameText.style.position = "absolute";
+                gameNameText.style.bottom = "0";
+                gameNameText.style.left = "0";
+                gameNameText.style.right = "0";
+                gameNameText.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
                 gameNameText.style.color = "white";
                 gameNameText.style.padding = "5px";
-                gameNameText.style.textAlign = "center";
+
+                image.addEventListener("click", function () {
+                  var input = document.getElementById("query");
+                  input.value = gameName;
+
+                  var searchButton = document.getElementById("SearchBtn");
+                  searchButton.click();
+                });
+
           
                 imageContainer.appendChild(image);
                 col.appendChild(imageContainer);
                 col.appendChild(gameNameText);
                 row.appendChild(col);
-                item.appendChild(row);
               });
           
+              item.appendChild(row);
               carousel.appendChild(item);
             }
           }
