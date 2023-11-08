@@ -326,7 +326,7 @@ function searchGame(inputVal) {
     .replace(/\s+/g, "-")
     .toLowerCase()}?key=${rawgAPIKey}`;
 
-  fetch(specificGameURL)
+    fetch(specificGameURL)
     .then((res) => {
       if (res.status === 404) {
         showAlertModal("Game not found.");
@@ -336,9 +336,9 @@ function searchGame(inputVal) {
     })
     .then((data) => {
       if (data === null) {
+        hideAlertModal();
         return;
       }
-
       const videoGameTitle = document.querySelector("#vgTitle");
       videoGameTitle.textContent = data.name;
       saveEl.setAttribute("data-game", data.name);
@@ -517,8 +517,9 @@ if (data && data.name) {
 
       renderWishlist();
     })
-    .catch((error) => {
+   .catch((error) => {
       console.error("Error fetching game details: ", error);
+      showAlertModal("An error occurred while fetching game details.");
     });
 }
 
