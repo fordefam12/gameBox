@@ -150,7 +150,13 @@ i:hover {
   clear: both;
 }
 
-
+.carousel-control-prev {
+    left: -140px; /* Adjust the left and right positions as needed */
+  }
+ 
+  .carousel-control-next {
+    right: -140px; /* Adjust the left and right positions as needed */
+  }
 
 
 
