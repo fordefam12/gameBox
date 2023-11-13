@@ -233,7 +233,7 @@ function fetchSeriesGames(gamePk, page = 1, page_size = 30) {
       // Check if there are series-related games
       if (data.results && data.results.length > 0) {
         displayRelatedGames(data.results);
-        console.log(data);
+        console.log(data.results);
       }
     })
     .catch((error) => {
@@ -569,6 +569,7 @@ function pageLoad() {
       fetch(pageLoadGenre)
         .then((res) => res.json())
         .then((pageLoadRatingData) => {
+
           function populateCarouselWithImages() {
             var carousel = document.querySelector(
               "#myCarousel .carousel-inner"
@@ -600,7 +601,7 @@ function pageLoad() {
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-
+console.log(gameName);
                 var col = document.createElement("div");
                 col.className = "col";
 
@@ -774,6 +775,7 @@ function handleSearchButtonClick(event) {
   const inputVal = input.value;
   clearGameDetailsContainer();
   searchGame(inputVal);
+  
 }
 
 // Define the array to store all game names
