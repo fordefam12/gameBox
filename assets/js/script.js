@@ -184,19 +184,14 @@ function renderWishlist() {
     );
 
     li.addEventListener("click", () => {
-      const gameName = li.textContent;
-      const gameSlug = gameName
-        .replace(/[^a-zA-Z 0-9]/g, '') // Remove non-letter and non-space characters
-        .replace(/ +/g, '-') // Replace consecutive spaces with a single hyphen
-        .toLowerCase();
-      
-      // Use the gameSlug in your code, for example:
+      const gameSlug = wishlistGame.slug; // Access the stored slug directly
       const videoGameContainerParent = document.getElementById("vgImages");
       videoGameContainerParent.innerHTML = "";
       searchGame(gameSlug);
       console.log(gameSlug);
     });
     
+
     
 
     li.appendChild(removeButton);
@@ -206,7 +201,7 @@ function renderWishlist() {
 
 // Function to initialize the page
 function init() {
-  var wishlistItems = JSON.parse(localStorage.getItem("wishlist"));
+  const wishlistItems = JSON.parse(localStorage.getItem("wishlist")) || [];
   if (wishlistItems !== null) {
     wishlistArray = wishlistItems;
   }
@@ -214,14 +209,35 @@ function init() {
 }
 
 // Function to store a game in the wishlist
-function storeWishlist(game) {
+function storeWishlist(gameTitle) {
   const wishlistItems = JSON.parse(localStorage.getItem("wishlist")) || [];
-  if (!wishlistItems.includes(game)) {
-    wishlistItems.push(game);
+
+  // Get the game slug from the title
+  const gameSlug = gameTitle
+    .trim() // Remove leading and trailing spaces
+    .replace(/[^a-zA-Z0-9\s]/g, '') // Remove non-letter, non-number, and non-space characters
+    .replace(/\s+/g, '-') // Replace consecutive spaces with a single hyphen
+    .toLowerCase();
+    console.log(gameTitle);
+
+  // Check if the game title is not already in the wishlist
+  const gameExists = wishlistItems.some(item => {
+    const savedGameTitle = item.title || item; // Check for both title and old structure
+    return savedGameTitle === gameTitle;
+  });
+
+  // If the game is not in the wishlist, add it with title and slug
+  if (!gameExists) {
+    wishlistItems.push({
+      title: gameTitle,
+      slug: gameSlug
+    });
+
     localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
     renderWishlist();
   }
 }
+
 
 // Function to fetch games in the same series
 function fetchSeriesGames(gamePk, page = 1, page_size = 30) {
@@ -601,7 +617,7 @@ function pageLoad() {
               chunk.forEach(function (gameData) {
                 var gameImageURL = gameData.background_image;
                 var gameName = gameData.slug;
-console.log(gameName);
+
                 var col = document.createElement("div");
                 col.className = "col";
 
