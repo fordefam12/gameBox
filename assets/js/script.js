@@ -769,14 +769,25 @@ console.log(gameName);
     });
 }
 
-// Function to handle the click event for the Search button
 function handleSearchButtonClick(event) {
   event.preventDefault();
   const inputVal = input.value;
+  const slug = createSlug(inputVal);
+  console.log(slug);
   clearGameDetailsContainer();
-  searchGame(inputVal);
-  
+  searchGame(slug);
 }
+
+function createSlug(input) {
+  return input
+    .toLowerCase()
+    .replace(/\s+/g, '-')  // Replace spaces with dashes
+    .replace(/[^\w\-]+/g, '')  // Remove non-word characters except dashes
+    .replace(/\-\-+/g, '-')  // Replace multiple dashes with a single dash
+    .replace(/^-+/, '')  // Remove leading dashes
+    .replace(/-+$/, '');  // Remove trailing dashes
+}
+
 
 // Define the array to store all game names
 const allGames = [];
