@@ -15,6 +15,86 @@ body {
   font-size: 16px; /* Increase font size for better readability */
 }
 
+/* Navbar overall style */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Logo styling */
+.navbar-logo {
+  width: 60px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Navbar dropdown */
+.navbar-dropdown {
+  background-color: #333;
+}
+
+.navbar-dropdown .navbar-item:hover {
+  background-color: #444;
+}
+
+/* Dark mode styling */
+.dark-mode {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+.light-mode {
+  background-color: #ffffff;
+  color: #121212;
+}
+
+/* Button styles */
+#darkModeToggle {
+  background-color: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+#darkModeToggle:hover {
+  background-color: #ff6b81;
+}
+
+/* Responsive navbar */
+.navbar-burger {
+  display: none;
+  cursor: pointer;
+}
+
+.navbar-menu {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .navbar-menu {
+    display: none;
+    flex-direction: column;
+  }
+  
+  .navbar-burger {
+    display: block;
+  }
+  
+  .navbar.is-active {
+    display: block;
+  }
+}
+
 header {
   width: 100%;
   display: flex;

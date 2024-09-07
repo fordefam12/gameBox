@@ -866,6 +866,23 @@ function filterGames() {
     gameList.appendChild(li);
   });
 }
+function showLoadingSpinner() {
+  document.getElementById("loadingSpinner").style.display = "block";
+}
+
+function hideLoadingSpinner() {
+  document.getElementById("loadingSpinner").style.display = "none";
+}
+
+// Example usage during an API call
+showLoadingSpinner();
+fetch('/api/some-data')
+  .then(response => response.json())
+  .then(data => {
+    // Process data
+    hideLoadingSpinner(); // Hide spinner after data is loaded
+  });
+
 
 // Attach an event listener to the search input
 searchInput.addEventListener('input', filterGames);

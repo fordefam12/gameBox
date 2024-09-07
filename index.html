@@ -12,57 +12,167 @@
       href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&family=Permanent+Marker&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"
+    />
     <link rel="stylesheet" href="./assets/css/style.css" />
     <title>GameBox</title>
   </head>
 
   <body onload="pageLoad()">
-    <header class="navbar is-flex is-justify-content-space-between has-background-dark p-3">
+    <header class="navbar has-background-dark p-2">
       <div class="navbar-brand">
-        <span class="has-text-weight-bold has-text-danger is-size-4">GameBox</span>
+        <!-- Interactive Logo with hover effect -->
+        <a href="#" onclick="navigateHome()">
+          <img
+            class="navbar-logo lazy"
+            data-src="images\GameboxLogo.png"
+            alt="GameBox Logo"
+            title="Click to go home"
+          />
+        </a>
       </div>
-      <button class="button is-light" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+      <div class="navbar-menu">
+        <div class="navbar-start">
+          <!-- Dropdown menu for categories like games, wishlist -->
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link has-text-light">Games</a>
+            <div class="navbar-dropdown">
+              <a href="#action" class="navbar-item">Action</a>
+              <a href="#adventure" class="navbar-item">Adventure</a>
+              <a href="#sports" class="navbar-item">Sports</a>
+              <hr class="navbar-divider" />
+              <a href="#wishlist" class="navbar-item">Wishlist</a>
+            </div>
+          </div>
+
+          <!-- Profile section -->
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link has-text-light">
+              <img
+                src="images\gameBoxQR.png"
+                alt="Profile"
+                class="navbar-icon"
+              />
+              Profile
+            </a>
+            <div class="navbar-dropdown">
+              <a href="#settings" class="navbar-item">Settings</a>
+              <a href="#logout" class="navbar-item">Logout</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dark Mode Toggle Button -->
+        <div class="navbar-end">
+          <button
+            class="button is-light"
+            id="darkModeToggle"
+            onclick="toggleDarkMode()"
+          >
+            Toggle Dark Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive Mobile Menu -->
+      <button
+        class="navbar-burger burger"
+        aria-label="menu"
+        aria-expanded="false"
+        data-target="navMenu"
+        onclick="toggleMenu()"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
     </header>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" style="display: none; text-align: center">
+      <img
+        src="./assets/images/spinner.gif"
+        alt="Loading..."
+        style="width: 50px; height: 50px"
+      />
+    </div>
+    <nav id="navMenu" class="navbar-menu">
+      <div class="navbar-start">
+        <a href="#home" class="navbar-item">Home</a>
+        <a href="#about" class="navbar-item">About</a>
+        <a href="#services" class="navbar-item">Services</a>
+      </div>
+    </nav>
 
     <section class="navbar-menu">
       <div class="navbar-end">
         <div id="pagination"></div>
         <div id="suggestions"></div>
-        <select id="genreFilter" class="select" onchange="filterByGenre(this.value)">
+        <select
+          id="genreFilter"
+          class="select"
+          onchange="filterByGenre(this.value)"
+        >
           <option value="action">Action</option>
           <option value="adventure">Adventure</option>
         </select>
-        
+
         <form id="form" role="search" class="field is-grouped mb-0">
-          <input id="query" name="q" class="input is-rounded" type="text" placeholder="Search Games..." list="games-datalist" />
+          <input
+            id="query"
+            name="q"
+            class="input is-rounded"
+            type="text"
+            placeholder="Search Games..."
+            list="games-datalist"
+          />
           <datalist id="games-datalist"></datalist>
           <button id="SearchBtn" class="button is-danger">Search</button>
         </form>
       </div>
     </section>
-
+    <div id="loadingSpinner" style="display: none">
+      <img src="./assets/images/GameboxLogo.png" alt="Loading..." />
+    </div>
     <div id="carousel-container" class="d-flex justify-content-center mt-2">
-      <div id="screenshotCarousel">
-        <img class="lazy" data-src="..\..\images\GameboxLogo.png" alt="Game Image" />
-      </div>
+      <div id="screenshotCarousel"></div>
     </div>
 
-    <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="4000">
+    <div
+      id="myCarousel"
+      class="carousel slide"
+      data-ride="carousel"
+      data-interval="4000"
+    >
       <div class="carousel-inner mt-3">
         <img class="lazy" data-src="path/to/image.jpg" alt="Game Image" />
       </div>
-      <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+      <a
+        class="carousel-control-prev"
+        href="#myCarousel"
+        role="button"
+        data-slide="prev"
+      >
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
       </a>
-      <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+      <a
+        class="carousel-control-next"
+        href="#myCarousel"
+        role="button"
+        data-slide="next"
+      >
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
       </a>
@@ -78,14 +188,19 @@
     </div>
 
     <div id="alertModal" class="modalcontent">
-      <span id="xbtn" class="has-background-danger" onclick="hideAlertModal()">&times;</span>
+      <span id="xbtn" class="has-background-danger" onclick="hideAlertModal()"
+        >&times;</span
+      >
       <p id="alertMessage">This is an alert message.</p>
     </div>
 
     <main>
       <section class="columns">
         <section class="column is-one-quarter tile is-vertical">
-          <article class="tile is-child notification has-background-warning" data-aos="flip-right">
+          <article
+            class="tile is-child notification has-background-warning"
+            data-aos="flip-right"
+          >
             <p class="title">Wishlist Items</p>
             <p>Wishlist Count: <span id="wishlist-count">0</span></p>
             <div id="wishlist-id"></div>
@@ -93,10 +208,19 @@
         </section>
 
         <section class="column is-half tile is-vertical">
-          <article class="tile is-child notification is-danger" data-aos="fade-down-left">
+          <article
+            class="tile is-child notification is-danger"
+            data-aos="fade-down-left"
+          >
             <p id="vgTitle" class="title"></p>
             <p id="releaseDate" class="subtitle"></p>
             <div class="content">
+              <article
+                class="tile notification has-background-grey-lighter"
+                data-aos="fade-up"
+              >
+                <div id="vgImages" class="content"></div>
+              </article>
               <article class="tile is-child notification is-primary">
                 <p class="title">Description:</p>
                 <p id="vgDescription" class="subtitle"></p>
@@ -104,44 +228,75 @@
             </div>
           </article>
 
-          <article class="tile is-child notification is-info" data-aos="fade-up-right">
+          <article
+            class="tile is-child notification is-info"
+            data-aos="fade-up-right"
+          >
             <p class="title">Rating:</p>
             <p id="vgRating" class="subtitle"></p>
             <div id="ratingStars"></div>
           </article>
 
-          <article class="tile is-child notification is-success" data-aos="fade-up-left">
+          <article
+            class="tile is-child notification is-success"
+            data-aos="fade-up-left"
+          >
             <p class="title">Platforms:</p>
             <p id="vgPlatforms" class="subtitle"></p>
           </article>
 
-          <article class="tile notification has-background-grey-lighter" data-aos="fade-up">
-            <div id="vgImages" class="content"></div>
+          <article
+            class="tile is-child notification is-primary is-flex is-justify-content-center"
+            data-aos="zoom-out"
+          >
+            <button id="saveBtn" class="button is-danger">
+              Save To Wishlist
+            </button>
           </article>
 
-          <div id="loadingSpinner" class="is-flex is-justify-content-center" style="display:none;">
-            <img src="path/to/spinner.gif" alt="Loading..." />
-          </div>
-
-          <article class="tile is-child notification is-primary is-flex is-justify-content-center" data-aos="zoom-out">
-            <button id="saveBtn" class="button is-danger">Save To Wishlist</button>
-          </article>
-
-          <div id="relatedGames" class="notification has-background-info is-flex is-justify-content-center">
+          <div
+            id="relatedGames"
+            class="notification has-background-info is-flex is-justify-content-center"
+          >
             <h1 class="title is-size-5 has-text-white">Related Games</h1>
           </div>
 
-          <input id="searchInput" type="text" placeholder="Search Games..." class="input" oninput="filterGames()" />
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search Games..."
+            class="input"
+            oninput="filterGames()"
+          />
           <ul id="gameList" class="notification has-background-grey"></ul>
         </section>
 
         <section class="column is-one-quarter tile is-vertical">
-          <article class="tile is-child notification has-background-danger has-text-danger-light">
-            <div id="chartContent" class="content chartBox" data-aos="flip-left" data-aos-duration="2000">
+          <article
+            class="tile is-child notification has-background-danger has-text-danger-light"
+          >
+            <div
+              id="chartContent"
+              class="content chartBox"
+              data-aos="flip-left"
+              data-aos-duration="2000"
+            >
               <p class="title">Comparable Ratings</p>
-              <p class="is-italic has-text-warning">** hover over chart to get specific rating **</p>
-              <canvas id="ratingChart" height="150" width="175" class="notification has-background-grey-lighter"></canvas>
-              <canvas id="popChart" height="150" width="175" class="notification has-background-grey-lighter"></canvas>
+              <p class="is-italic has-text-warning">
+                ** hover over chart to get specific rating **
+              </p>
+              <canvas
+                id="ratingChart"
+                height="150"
+                width="175"
+                class="notification has-background-grey-lighter"
+              ></canvas>
+              <canvas
+                id="popChart"
+                height="150"
+                width="175"
+                class="notification has-background-grey-lighter"
+              ></canvas>
             </div>
           </article>
         </section>
@@ -174,7 +329,7 @@
     <script>
       function generateStarRating(rating) {
         const starContainer = document.getElementById("ratingStars");
-        starContainer.innerHTML = ''; // Clear previous stars
+        starContainer.innerHTML = ""; // Clear previous stars
         const fullStar = '<span class="fa fa-star checked"></span>';
         const emptyStar = '<span class="fa fa-star"></span>';
         for (let i = 0; i < 5; i++) {
@@ -184,6 +339,38 @@
 
       // Example Usage: Call this when game data loads
       generateStarRating(4); // Pass in game rating dynamically
+    </script>
+    <script>
+      function toggleDarkMode() {
+        const body = document.body;
+        const button = document.getElementById("darkModeToggle");
+
+        body.classList.toggle("dark-mode");
+        body.classList.toggle("light-mode");
+
+        if (body.classList.contains("dark-mode")) {
+          localStorage.setItem("darkMode", "true");
+          button.textContent = "Switch to Light Mode";
+        } else {
+          localStorage.setItem("darkMode", "false");
+          button.textContent = "Switch to Dark Mode";
+        }
+      }
+
+      // Initialize the dark mode state based on localStorage
+      document.addEventListener("DOMContentLoaded", () => {
+        const isDarkMode = localStorage.getItem("darkMode") === "true";
+        const body = document.body;
+        const button = document.getElementById("darkModeToggle");
+
+        if (isDarkMode) {
+          body.classList.add("dark-mode");
+          button.textContent = "Switch to Light Mode";
+        } else {
+          body.classList.add("light-mode");
+          button.textContent = "Switch to Dark Mode";
+        }
+      });
     </script>
   </body>
 </html>
