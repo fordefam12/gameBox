@@ -83,7 +83,15 @@ function renderWishlist() {
 
   wishlistArray.forEach((wishlistGame, i) => {
     const li = document.createElement("button");
-    li.textContent = wishlistGame;
+    
+    // Check if wishlistGame is an object or a string
+    if (typeof wishlistGame === 'object' && wishlistGame.title) {
+      // It's an object, use the title property
+      li.textContent = wishlistGame.title;
+    } else {
+      // It's a string, use the string value directly
+      li.textContent = wishlistGame;
+    }
     li.setAttribute("data-index", i);
     li.classList.add("liStyles");
     li.style.cssText = `
