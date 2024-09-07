@@ -1,0 +1,9 @@
+@media (max-width: 768px) {
+    #gameList {
+      display: block;
+    }
+    #pagination {
+      text-align: center;
+    }
+  }
+  

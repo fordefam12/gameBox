@@ -252,3 +252,12 @@ li {
     left: 0; /* Adjust the left and right positions as needed */
   }
 }
+body.dark-mode {
+  background-color: #333;
+  color: white;
+}
+
+button.dark-mode {
+  background-color: #444;
+  color: white;
+}

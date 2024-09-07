@@ -1,0 +1,14 @@
+function fetchGameDetails(gameId) {
+    const url = `https://api.rawg.io/api/games/${gameId}?key=${rawgAPIKey}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        renderGameDetails(data);
+      });
+  }
+  
+  function renderGameDetails(game) {
+    document.getElementById('gameRequirements').innerText = game.requirements.minimum;
+    document.getElementById('gameReviews').innerText = game.reviews;
+  }
+  

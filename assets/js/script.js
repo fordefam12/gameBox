@@ -883,6 +883,9 @@ saveEl.addEventListener("click", (event) => {
   const wishlistText = event.target.getAttribute("data-game");
   storeWishlist(wishlistText);
 });
+const toggleDarkMode = () => {
+  document.body.classList.toggle('dark-mode');
+};
 
 // Initial page load
 init();
