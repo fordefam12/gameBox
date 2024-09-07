@@ -108,102 +108,106 @@ function renderWishlist() {
     `;
 
     const removeButton = document.createElement("button");
-    removeButton.style.cssText = `
-      margin-left: 1%;
-      background-color: hsl(348, 100%, 61%);
-      border: 1px solid rgba(255, 182, 182, 0.534);
-      padding: 1%;
-      display: flex;
-      height: 25px;
-    `;
-    removeButton.classList.add("removebuttonstyle", "fa", "fa-remove");
-    removeButton.textContent = "";
-    removeButton.dataset.game = wishlistGame;
+removeButton.style.cssText = `
+  margin-left: 1%;
+  background-color: hsl(348, 100%, 61%);
+  border: 1px solid rgba(255, 182, 182, 0.534);
+  padding: 1%;
+  display: flex;
+  height: 25px;
+`;
+removeButton.classList.add("removebuttonstyle", "fa", "fa-remove");
+removeButton.textContent = "";
 
-    removeButton.addEventListener("click", (event) => {
-      const gameTitle = event.target.getAttribute("data-game");
-      const updatedWishlist = wishlistArray.filter(
-        (game) => game !== gameTitle
-      );
-      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-      renderWishlist();
-    });
+// Set the correct game title or slug in the dataset
+removeButton.dataset.game = wishlistGame.title || wishlistGame.slug || wishlistGame; 
 
-    const addMouseOverAndOutEvents = (
-      element,
-      stylesOnMouseOver,
-      stylesOnMouseOut
-    ) => {
-      element.addEventListener("mouseover", () => {
-        element.style.cssText = stylesOnMouseOver;
-      });
+removeButton.addEventListener("click", (event) => {
+  event.stopPropagation(); // Prevent triggering the game search when removing
+  const gameTitle = event.target.getAttribute("data-game");
+  
+  // Correct the comparison by using the relevant property (e.g., title or slug)
+  const updatedWishlist = wishlistArray.filter(
+    (game) => game.title !== gameTitle && game.slug !== gameTitle
+  );
 
-      element.addEventListener("mouseout", () => {
-        element.style.cssText = stylesOnMouseOut;
-      });
-    };
+  // Update localStorage and re-render the wishlist
+  localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+  renderWishlist();
+});
 
-    addMouseOverAndOutEvents(
-      removeButton,
-      `
-      margin-left: 1%;
-      background-color: hsl(348, 100%, 61%);
-      border: none;
-      padding: 1%;
-      cursor: pointer;
-      display: flex;
-      height: 25px;
-    `,
-      `
-      margin-left: 1%;
-      background-color: hsl(348, 100%, 61%);
-      border: 1px solid rgba(255, 182, 182, 0.534);
-      padding: 1%;
-      height: 25px;
-    `
-    );
+// Function to handle mouseover and mouseout events for styling
+const addMouseOverAndOutEvents = (element, stylesOnMouseOver, stylesOnMouseOut) => {
+  element.addEventListener("mouseover", () => {
+    element.style.cssText = stylesOnMouseOver;
+  });
 
-    addMouseOverAndOutEvents(
-      li,
-      `
-      margin-right: 1%;
-      margin-bottom: 4%;
-      background-color: hsl(204, 86%, 53%);
-      width: 75%;
-      color: white;
-      border-radius: 2px;
-      border: none;
-      padding: 3%;
-      display: flex;
-      justify-content: space-between;
-    `,
-      `
-      margin-right: 1%;
-      margin-bottom: 4%;
-      background-color: hsl(204, 86%, 53%);
-      width: 75%;
-      color: white;
-      border-radius: 2px;
-      border: 1px solid blue;
-      padding: 3%;
-      display: flex;
-      justify-content: space-between;
-    `
-    );
+  element.addEventListener("mouseout", () => {
+    element.style.cssText = stylesOnMouseOut;
+  });
+};
 
-    li.addEventListener("click", () => {
-      const gameSlug = wishlistGame.slug; // Access the stored slug directly
-      const videoGameContainerParent = document.getElementById("vgImages");
-      videoGameContainerParent.innerHTML = "";
-      searchGame(gameSlug);
-      console.log(gameSlug);
-    });
-    
+// Apply hover effects for remove button
+addMouseOverAndOutEvents(
+  removeButton,
+  `
+  margin-left: 1%;
+  background-color: hsl(348, 100%, 61%);
+  border: none;
+  padding: 1%;
+  cursor: pointer;
+  display: flex;
+  height: 25px;
+`,
+  `
+  margin-left: 1%;
+  background-color: hsl(348, 100%, 61%);
+  border: 1px solid rgba(255, 182, 182, 0.534);
+  padding: 1%;
+  height: 25px;
+`
+);
 
-    
+// Apply hover effects for the list item
+addMouseOverAndOutEvents(
+  li,
+  `
+  margin-right: 1%;
+  margin-bottom: 4%;
+  background-color: hsl(204, 86%, 53%);
+  width: 75%;
+  color: white;
+  border-radius: 2px;
+  border: none;
+  padding: 3%;
+  display: flex;
+  justify-content: space-between;
+`,
+  `
+  margin-right: 1%;
+  margin-bottom: 4%;
+  background-color: hsl(204, 86%, 53%);
+  width: 75%;
+  color: white;
+  border-radius: 2px;
+  border: 1px solid blue;
+  padding: 3%;
+  display: flex;
+  justify-content: space-between;
+`
+);
 
-    li.appendChild(removeButton);
-    wishlist.appendChild(li);
+// Event listener to handle clicking the list item to trigger search
+li.addEventListener("click", () => {
+  const gameSlug = wishlistGame.slug || wishlistGame.title || wishlistGame;
+  const videoGameContainerParent = document.getElementById("vgImages");
+  videoGameContainerParent.innerHTML = ""; // Clear existing game images
+  searchGame(gameSlug); // Trigger game search
+  console.log(gameSlug);
+});
+
+li.appendChild(removeButton);
+wishlist.appendChild(li);
   });
 }
 
