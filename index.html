@@ -131,12 +131,15 @@
         <form id="form" role="search" class="field is-grouped mb-0">
           <input
             id="query"
+            id="searchInput"
             name="q"
             class="input is-rounded"
             type="text"
             placeholder="Search Games..."
             list="games-datalist"
+            oninput="fetchGameSuggestions(this.value)"
           />
+          <div id="suggestionsList"></div>
           <datalist id="games-datalist"></datalist>
           <button id="SearchBtn" class="button is-danger">Search</button>
         </form>
@@ -145,6 +148,7 @@
     <div id="loadingSpinner" style="display: none">
       <img src="./assets/images/GameboxLogo.png" alt="Loading..." />
     </div>
+
     <div id="carousel-container" class="d-flex justify-content-center mt-2">
       <div id="screenshotCarousel"></div>
     </div>
@@ -371,6 +375,44 @@
           button.textContent = "Switch to Dark Mode";
         }
       });
+    </script>
+    <script>
+      const rawgAPIKey = "YOUR_RAWG_API_KEY"; // Replace with your RAWG API key
+
+      function fetchGameSuggestions(query) {
+        if (query.length < 2) {
+          // Hide suggestions if the query is too short
+          document.getElementById("suggestionsList").innerHTML = "";
+          return;
+        }
+
+        const url = `https://api.rawg.io/api/games?key=${rawgAPIKey}&search=${query}`;
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            // Show suggestions as a dropdown list
+            const suggestions = data.results.slice(0, 5); // Limit suggestions to the first 5 results
+            let suggestionsHTML = "<ul>";
+            suggestions.forEach((game) => {
+              suggestionsHTML += `<li onclick="selectGame('${game.name}')">${game.name}</li>`;
+            });
+            suggestionsHTML += "</ul>";
+
+            document.getElementById("suggestionsList").innerHTML =
+              suggestionsHTML;
+          })
+          .catch((error) => {
+            console.error("Error fetching game suggestions:", error);
+          });
+      }
+
+      function selectGame(gameName) {
+        // Populate the search input with the selected game name
+        document.getElementById("searchInput").value = gameName;
+        // Hide the suggestions list
+        document.getElementById("suggestionsList").innerHTML = "";
+      }
     </script>
   </body>
 </html>
