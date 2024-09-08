@@ -28,4 +28,11 @@ function filterByGenre(genre) {
     const filteredGames = allGames.filter(game => game.genres.includes(genre));
     renderGameList(filteredGames);
   }
-  
+  import { fetchGamesList, getGameList } from './utils/apiHelper.js';
+
+// Initialize the game list
+const rawgAPIKey = 'YOUR_API_KEY';  // Replace with your RAWG API key
+fetchGamesList(rawgAPIKey).then(() => {
+  const gameList = getGameList();
+  console.log(gameList);  // Check if the games are fetched correctly
+});
