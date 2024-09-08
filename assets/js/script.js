@@ -15,6 +15,8 @@ const page = 1; // Page number
 const pageSize = 100; // Number of games per page
 const apiUrl = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${pageSize}`;
 
+
+
 // Function to fetch and display the list of games
 function fetchGamesList() {
   const gamesListURL = `https://api.rawg.io/api/games?key=${rawgAPIKey}&page=${page}&page_size=${pageSize}`;
@@ -72,6 +74,10 @@ function clearGameDetailsContainer() {
 function clearPreviousGameImages() {
   const videoGameContainer = document.getElementById("vgImages");
   videoGameContainer.innerHTML = "";
+}
+function toggleMenu() {
+  const nav = document.getElementById('navMenu');
+  nav.classList.toggle('is-active');
 }
 
 // Function to render items in the wishlist as <li> elements
@@ -889,6 +895,95 @@ searchInput.addEventListener('input', filterGames);
 
 // Initialize the game list
 filterGames();
+function fetchGameSuggestions(query) {
+  if (query.length < 2) {
+    document.getElementById("suggestionsList").innerHTML = "";
+    return;
+  }
+
+  const url = `https://api.rawg.io/api/games?key=${rawgAPIKey}&search=${query}`;
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Show suggestions as a dropdown list
+      const suggestions = data.results.slice(0, 5);
+      let suggestionsHTML = "<ul>";
+      suggestions.forEach(game => {
+        suggestionsHTML += `<li onclick="selectGame('${game.name}')">${game.name}</li>`;
+      });
+      suggestionsHTML += "</ul>";
+      document.getElementById("suggestionsList").innerHTML = suggestionsHTML;
+    })
+    .catch(error => {
+      console.error("Error fetching game suggestions:", error);
+    });
+}
+
+
+const giantBombAPIKey = "5203df07fa7057b6c6b1cc15a141a8f97ca375d9";
+const giantBombAPIUrl = "https://www.giantbomb.com/api";
+
+// Function to fetch game data from Giant Bomb API
+async function fetchGiantBombGameData(query) {
+  const url = `${giantBombAPIUrl}/search/?api_key=${giantBombAPIKey}&format=json&query=${query}&resources=game`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.results && data.results.length > 0) {
+      displayGiantBombGameData(data.results[0]); // Display the first search result
+    } else {
+      console.log("No games found.");
+    }
+  } catch (error) {
+    console.error("Error fetching Giant Bomb game data:", error);
+  }
+}
+
+// Example of displaying game data (can be enhanced for your UI)
+function displayGiantBombGameData(game) {
+  console.log(`Title: ${game.name}`);
+  console.log(`Description: ${game.deck}`);
+  console.log(`Release Date: ${game.original_release_date}`);
+  console.log(`Genres: ${game.genres.map(genre => genre.name).join(', ')}`);
+  console.log(`Platforms: ${game.platforms.map(platform => platform.name).join(', ')}`);
+  console.log(`Image: ${game.image.small_url}`);
+  console.log(`Videos: ${game.videos.length} videos available`);
+}
+
+// Function to search game and use both RAWG and Giant Bomb APIs
+function searchGameWithFallback(inputVal) {
+  const slug = createSlug(inputVal);
+
+  // First search the game in RAWG API
+  searchGame(slug)
+    .then((data) => {
+      if (!data) {
+        // If the game isn't found in RAWG, try searching in Giant Bomb
+        fetchGiantBombGameData(inputVal);
+      }
+    })
+    .catch((error) => {
+      console.error("Error searching game in RAWG:", error);
+      // Fallback to Giant Bomb if there's an error
+      fetchGiantBombGameData(inputVal);
+    });
+}
+
+// Event listener to trigger search
+document.getElementById("SearchBtn").addEventListener("click", (event) => {
+  event.preventDefault();
+  const inputVal = input.value;
+  searchGameWithFallback(inputVal); // Search using both RAWG and Giant Bomb
+});
+
 
 // Event listeners
 document

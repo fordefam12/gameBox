@@ -78,6 +78,7 @@
 
         <!-- Dark Mode Toggle Button -->
         <div class="navbar-end">
+          
           <button
             class="button is-light"
             id="darkModeToggle"
@@ -85,42 +86,7 @@
           >
             Toggle Dark Mode
           </button>
-        </div>
-      </div>
-
-      <!-- Responsive Mobile Menu -->
-      <button
-        class="navbar-burger burger"
-        aria-label="menu"
-        aria-expanded="false"
-        data-target="navMenu"
-        onclick="toggleMenu()"
-      >
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </button>
-    </header>
-    <!-- Loading Spinner -->
-    <div id="loadingSpinner" style="display: none; text-align: center">
-      <img
-        src="./assets/images/spinner.gif"
-        alt="Loading..."
-        style="width: 50px; height: 50px"
-      />
-    </div>
-    <nav id="navMenu" class="navbar-menu">
-      <div class="navbar-start">
-        <a href="#home" class="navbar-item">Home</a>
-        <a href="#about" class="navbar-item">About</a>
-        <a href="#services" class="navbar-item">Services</a>
-      </div>
-    </nav>
-
-    <section class="navbar-menu">
-      <div class="navbar-end">
-        <div id="pagination"></div>
-        <div id="suggestions"></div>
+          <div id="suggestions"></div>
         <select
           id="genreFilter"
           class="select"
@@ -141,14 +107,51 @@
             list="games-datalist"
             oninput="fetchGameSuggestions(this.value)"
           />
-          <div id="suggestionsList"></div>
+          
+
           <datalist id="games-datalist"></datalist>
           <button id="SearchBtn" class="button is-danger">Search</button>
         </form>
       </div>
     </section>
+        </div>
+      </div>
+
+      <!-- Responsive Mobile Menu -->
+      <button
+        class="navbar-burger burger"
+        aria-label="menu"
+        aria-expanded="false"
+        data-target="navMenu"
+        onclick="toggleMenu()"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" style="display: none; text-align: center">
+      <img
+        src=images\gaming.gif
+        alt="Loading..."
+        style="width: 50px; height: 50px"
+      />
+    </div>
+    <nav id="navMenu" class="navbar-menu">
+      <div class="navbar-start">
+        <a href="#home" class="navbar-item">Home</a>
+        <a href="#about" class="navbar-item">About</a>
+        <a href="#services" class="navbar-item">Services</a>
+      </div>
+    </nav>
+
+    <section class="navbar-menu">
+      <div class="navbar-end">
+        <div id="pagination"></div>
+        
     <div id="loadingSpinner" style="display: none">
-      <img src="./assets/images/GameboxLogo.png" alt="Loading..." />
+      <img src="images\gaming.gif" alt="Loading..." />
     </div>
 
     <div id="carousel-container" class="d-flex justify-content-center mt-2">
@@ -208,6 +211,7 @@
             data-aos="flip-right"
           >
             <p class="title">Wishlist Items</p>
+            <div id="suggestionsList"></div>
             <p>Wishlist Count: <span id="wishlist-count">0</span></p>
             <div id="wishlist-id"></div>
           </article>
@@ -313,6 +317,7 @@
       </div>
     </main>
 
+ 
     <!-- External Scripts (moved to bottom for performance) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

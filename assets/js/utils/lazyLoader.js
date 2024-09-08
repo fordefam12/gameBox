@@ -1,20 +1,24 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const lazyImages = document.querySelectorAll("img.lazy");
+document.addEventListener("DOMContentLoaded", function () {
+  const lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
   
-    const lazyLoad = (image) => {
-      image.src = image.dataset.src;
-      image.classList.remove('lazy');
-    };
-  
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
+  if ("IntersectionObserver" in window) {
+    let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          lazyLoad(entry.target);
-          observer.unobserve(entry.target);
+          let lazyImage = entry.target;
+          lazyImage.src = lazyImage.dataset.src; // Set the image src from data-src
+          lazyImageObserver.unobserve(lazyImage);
         }
       });
     });
-  
-    lazyImages.forEach(image => observer.observe(image));
-  });
-  
+
+    lazyImages.forEach(function (lazyImage) {
+      lazyImageObserver.observe(lazyImage);
+    });
+  } else {
+    // Fallback for older browsers
+    lazyImages.forEach(function (lazyImage) {
+      lazyImage.src = lazyImage.dataset.src;
+    });
+  }
+});
